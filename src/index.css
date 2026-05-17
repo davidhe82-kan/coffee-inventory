@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Source Sans 3", system-ui, sans-serif;
+
+  --color-coffee-50: #faf8f7;
+  --color-coffee-100: #f5f1ee;
+  --color-coffee-200: #e8dfd7;
+  --color-coffee-300: #d7ccc8;
+  --color-coffee-400: #bcaaa4;
+  --color-coffee-500: #a1887f;
+  --color-coffee-600: #8d6e63;
+  --color-coffee-700: #6d4c41;
+  --color-coffee-800: #5d4037;
+  --color-coffee-900: #4e342e;
+  --color-coffee-950: #3e2723;
+
+  --color-cream-50: #fefcfb;
+  --color-cream-100: #fdf8f4;
+  --color-cream-200: #faf3ec;
+  --color-cream-300: #f5ebe0;
+  --color-cream-400: #e8d9c8;
+  --color-cream-500: #d4c4ad;
+
+  --color-accent-400: #ff8a65;
+  --color-accent-500: #ff7043;
+  --color-accent-600: #f4511e;
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-body);
+    background-color: var(--color-cream-100);
+    color: var(--color-coffee-800);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+  }
+
+  body {
+    min-height: 100vh;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }

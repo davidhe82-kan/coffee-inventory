@@ -1,0 +1,198 @@
+import { supabase, isSupabaseConfigured } from '@/supabase'
+import { localStorageService } from '@/lib/localStorageService'
+import type { CoffeeBean, CoffeeBeanFormData } from '../types'
+
+export const coffeeBeanService = {
+  async getAll(): Promise<CoffeeBean[]> {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase
+        .from('coffee_beans')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Supabase error:', error)
+        return localStorageService.getAllBeans()
+      }
+
+      return data.map((row) => ({
+        id: row.id,
+        name: row.name,
+        origin: row.origin || '',
+        roaster: row.roaster || '',
+        roastLevel: row.roast_level || 'medium',
+        roastDate: new Date(row.roast_date),
+        quantity: row.quantity || 0,
+        totalQuantity: row.total_quantity || 0,
+        price: row.price || 0,
+        notes: row.notes || '',
+        createdAt: new Date(row.created_at),
+        updatedAt: new Date(row.updated_at),
+      }))
+    }
+
+    return localStorageService.getAllBeans()
+  },
+
+  async getById(id: string): Promise<CoffeeBean | null> {
+    if (isSupabaseConfigured()) {
+      const { data, error } = await supabase
+        .from('coffee_beans')
+        .select('*')
+        .eq('id', id)
+        .single()
+
+      if (error || !data) {
+        const beans = localStorageService.getAllBeans()
+        return beans.find((b) => b.id === id) || null
+      }
+
+      return {
+        id: data.id,
+        name: data.name,
+        origin: data.origin || '',
+        roaster: data.roaster || '',
+        roastLevel: data.roast_level || 'medium',
+        roastDate: new Date(data.roast_date),
+        quantity: data.quantity || 0,
+        totalQuantity: data.total_quantity || 0,
+        price: data.price || 0,
+        notes: data.notes || '',
+        createdAt: new Date(data.created_at),
+        updatedAt: new Date(data.updated_at),
+      }
+    }
+
+    const beans = localStorageService.getAllBeans()
+    return beans.find((b) => b.id === id) || null
+  },
+
+  async create(data: CoffeeBeanFormData): Promise<CoffeeBean> {
+    const now = new Date().toISOString()
+    const docData = {
+      name: data.name,
+      origin: data.origin || '',
+      roaster: data.roaster || '',
+      roast_level: data.roastLevel,
+      roast_date: data.roastDate.toISOString(),
+      quantity: data.quantity,
+      total_quantity: data.totalQuantity,
+      price: data.price,
+      notes: data.notes || '',
+      created_at: now,
+      updated_at: now,
+    }
+
+    if (isSupabaseConfigured()) {
+      const { data: result, error } = await supabase
+        .from('coffee_beans')
+        .insert(docData)
+        .select()
+        .single()
+
+      if (error) {
+        console.error('Supabase create error:', error)
+        throw new Error('Failed to create bean in Supabase')
+      }
+
+      return {
+        id: result.id,
+        name: result.name,
+        origin: result.origin || '',
+        roaster: result.roaster || '',
+        roastLevel: result.roast_level,
+        roastDate: new Date(result.roast_date),
+        quantity: result.quantity,
+        totalQuantity: result.total_quantity,
+        price: result.price,
+        notes: result.notes || '',
+        createdAt: new Date(result.created_at),
+        updatedAt: new Date(result.updated_at),
+      }
+    }
+
+    return localStorageService.addBean({
+      name: data.name,
+      origin: data.origin || '',
+      roaster: data.roaster || '',
+      roastLevel: data.roastLevel,
+      roastDate: data.roastDate,
+      quantity: data.quantity,
+      totalQuantity: data.totalQuantity,
+      price: data.price,
+      notes: data.notes || '',
+    })
+  },
+
+  async update(id: string, data: Partial<CoffeeBeanFormData>): Promise<void> {
+    const updateData: Record<string, unknown> = {
+      updated_at: new Date().toISOString(),
+    }
+
+    if (data.name !== undefined) updateData.name = data.name
+    if (data.origin !== undefined) updateData.origin = data.origin
+    if (data.roaster !== undefined) updateData.roaster = data.roaster
+    if (data.roastLevel !== undefined) updateData.roast_level = data.roastLevel
+    if (data.quantity !== undefined) updateData.quantity = data.quantity
+    if (data.totalQuantity !== undefined) updateData.total_quantity = data.totalQuantity
+    if (data.price !== undefined) updateData.price = data.price
+    if (data.notes !== undefined) updateData.notes = data.notes
+    if (data.roastDate !== undefined) updateData.roast_date = data.roastDate.toISOString()
+
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase
+        .from('coffee_beans')
+        .update(updateData)
+        .eq('id', id)
+
+      if (error) {
+        console.error('Supabase update error:', error)
+      }
+    }
+  },
+
+  async updateQuantity(id: string, quantity: number): Promise<void> {
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase
+        .from('coffee_beans')
+        .update({
+          quantity,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+
+      if (error) {
+        console.error('Supabase updateQuantity error:', error)
+      }
+    } else {
+      localStorageService.updateBeanQuantity(id, quantity)
+    }
+  },
+
+  async delete(id: string): Promise<void> {
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase
+        .from('coffee_beans')
+        .delete()
+        .eq('id', id)
+
+      if (error) {
+        console.error('Supabase delete error:', error)
+      }
+    }
+  },
+
+  async addSampleBean(): Promise<CoffeeBean> {
+    return this.create({
+      name: 'Laners 翼神传说',
+      origin: '巴拿马',
+      roaster: '',
+      roastLevel: 'light',
+      roastDate: new Date('2026-04-20'),
+      quantity: 15,
+      totalQuantity: 15,
+      price: 87,
+      notes: '豆种：瑰夏 | 处理法：日晒 | 庄园/处理站：索菲亚 | 风味：荔枝花、血橙、荔枝 | 最佳饮用期：90天',
+    })
+  },
+}

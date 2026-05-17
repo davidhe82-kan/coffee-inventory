@@ -1,0 +1,169 @@
+import { useState, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
+import { Button } from '@/components/ui/Button'
+import { useCoffeeBeans } from '../hooks/useCoffeeBeans'
+import type { CoffeeBeanFormData, RoastLevel } from '../types'
+import { ArrowLeft, Save } from 'lucide-react'
+
+interface BeanFormProps {
+  initialData?: Partial<CoffeeBeanFormData>
+  beanId?: string
+  isEdit?: boolean
+}
+
+export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps) {
+  const navigate = useNavigate()
+  const { addBean, updateBean } = useCoffeeBeans()
+  const [loading, setLoading] = useState(false)
+  const [formData, setFormData] = useState<CoffeeBeanFormData>({
+    name: initialData?.name || '',
+    origin: initialData?.origin || '',
+    roaster: initialData?.roaster || '',
+    roastLevel: initialData?.roastLevel || 'medium',
+    roastDate: initialData?.roastDate || new Date(),
+    quantity: initialData?.quantity || 227,
+    totalQuantity: initialData?.totalQuantity || 227,
+    price: initialData?.price || 0,
+    notes: initialData?.notes || '',
+  })
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!formData.name.trim()) return
+
+    try {
+      setLoading(true)
+      if (isEdit && beanId) {
+        await updateBean(beanId, formData)
+        navigate(`/bean/${beanId}`)
+      } else {
+        const newBean = await addBean(formData)
+        navigate(`/bean/${newBean.id}`)
+      }
+    } catch (error) {
+      console.error('Failed to save bean:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleChange = (field: keyof CoffeeBeanFormData, value: string | number | Date) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <div className="flex items-center gap-4">
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(isEdit ? `/bean/${beanId}` : '/')}
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          返回
+        </Button>
+        <h2 className="text-xl font-semibold text-coffee-800">
+          {isEdit ? '编辑咖啡豆' : '添加新咖啡豆'}
+        </h2>
+      </div>
+
+      <div className="grid gap-5 md:grid-cols-2">
+        <Input
+          label="咖啡豆名称 *"
+          value={formData.name}
+          onChange={(e) => handleChange('name', e.target.value)}
+          placeholder="例如：耶加雪菲"
+          required
+        />
+
+        <Input
+          label="产地"
+          value={formData.origin}
+          onChange={(e) => handleChange('origin', e.target.value)}
+          placeholder="例如：埃塞俄比亚"
+        />
+
+        <Input
+          label="烘焙商"
+          value={formData.roaster}
+          onChange={(e) => handleChange('roaster', e.target.value)}
+          placeholder="例如：%ARABICA"
+        />
+
+        <Select
+          label="烘焙程度"
+          value={formData.roastLevel}
+          onChange={(e) => handleChange('roastLevel', e.target.value as RoastLevel)}
+          options={[
+            { value: 'light', label: '浅烘' },
+            { value: 'medium', label: '中烘' },
+            { value: 'dark', label: '深烘' },
+          ]}
+        />
+
+        <Input
+          label="购入日期"
+          type="date"
+          value={formData.roastDate instanceof Date ? formData.roastDate.toISOString().split('T')[0] : ''}
+          onChange={(e) => handleChange('roastDate', new Date(e.target.value))}
+        />
+
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="当前库存 (g)"
+            type="number"
+            value={formData.quantity}
+            onChange={(e) => handleChange('quantity', Number(e.target.value))}
+            min={0}
+          />
+          <Input
+            label="总购入量 (g)"
+            type="number"
+            value={formData.totalQuantity}
+            onChange={(e) => handleChange('totalQuantity', Number(e.target.value))}
+            min={0}
+          />
+        </div>
+
+        <Input
+          label="价格 (元)"
+          type="number"
+          value={formData.price}
+          onChange={(e) => handleChange('price', Number(e.target.value))}
+          min={0}
+          step={0.01}
+        />
+
+        <div className="md:col-span-2">
+          <label className="text-sm font-medium text-coffee-700 block mb-1.5">
+            风味备注
+          </label>
+          <textarea
+            value={formData.notes}
+            onChange={(e) => handleChange('notes', e.target.value)}
+            placeholder="描述这款咖啡的风味特点..."
+            rows={3}
+            className="w-full px-4 py-2.5 rounded-lg border border-coffee-300 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500 transition-colors duration-200 resize-none"
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <Button type="submit" disabled={loading || !formData.name.trim()}>
+          <Save className="w-4 h-4 mr-2" />
+          {loading ? '保存中...' : '保存'}
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={() => navigate(isEdit ? `/bean/${beanId}` : '/')}
+        >
+          取消
+        </Button>
+      </div>
+    </form>
+  )
+}

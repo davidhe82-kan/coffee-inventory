@@ -1,0 +1,60 @@
+import { format, differenceInDays } from 'date-fns'
+import { Card } from '@/components/ui/Card'
+import { FreshnessBadge } from './FreshnessBadge'
+import { QuantityBar } from './QuantityBar'
+import { cn, getRoastLevelLabel, parseBestPeriod, getFreshnessStatus } from '@/lib/utils'
+import type { CoffeeBean } from '@/features/inventory/types'
+import { MapPin, Building2 } from 'lucide-react'
+
+interface BeanCardProps {
+  bean: CoffeeBean
+  onClick?: () => void
+  className?: string
+}
+
+export function BeanCard({ bean, onClick, className }: BeanCardProps) {
+  const roastDate = new Date(bean.roastDate)
+  const days = differenceInDays(new Date(), roastDate)
+  const bestPeriod = parseBestPeriod(bean.notes)
+  const freshness = getFreshnessStatus(roastDate, bestPeriod)
+
+  return (
+    <Card
+      hover
+      className={cn('p-5 animate-fade-in opacity-0', className)}
+      onClick={onClick}
+    >
+      <div className="flex items-start justify-between gap-3 mb-4">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-lg font-semibold text-coffee-900 truncate">{bean.name}</h3>
+          <div className="flex items-center gap-3 mt-1 text-sm text-coffee-600">
+            {bean.origin && (
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5" />
+                {bean.origin}
+              </span>
+            )}
+            {bean.roaster && (
+              <span className="flex items-center gap-1">
+                <Building2 className="w-3.5 h-3.5" />
+                {bean.roaster}
+              </span>
+            )}
+          </div>
+        </div>
+        <FreshnessBadge status={freshness} days={days} />
+      </div>
+
+      <div className="flex items-center gap-2 mb-4">
+        <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-coffee-100 text-coffee-700">
+          {getRoastLevelLabel(bean.roastLevel)}
+        </span>
+        <span className="text-xs text-coffee-500">
+          烘焙于 {format(roastDate, 'M月d日')}
+        </span>
+      </div>
+
+      <QuantityBar current={bean.quantity} total={bean.totalQuantity} />
+    </Card>
+  )
+}

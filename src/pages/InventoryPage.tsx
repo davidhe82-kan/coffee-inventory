@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Search, Plus, SortAsc, Coffee, Clipboard } from 'lucide-react'
 import { BeanCard } from '@/features/inventory/components/BeanCard'
 import { useCoffeeBeans } from '@/features/inventory/hooks/useCoffeeBeans'
@@ -11,6 +11,7 @@ type SortOption = 'newest' | 'oldest' | 'name' | 'quantity'
 
 export function InventoryPage() {
   const { beans, loading, refresh } = useCoffeeBeans()
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<SortOption>('newest')
   const [adding, setAdding] = useState(false)
@@ -160,7 +161,7 @@ export function InventoryPage() {
               <BeanCard
                 key={bean.id}
                 bean={bean}
-                onClick={() => window.location.href = `/bean/${bean.id}`}
+                onClick={() => navigate(`/bean/${bean.id}`)}
                 className={`stagger-${Math.min(index + 1, 5)}`}
               />
             ))}

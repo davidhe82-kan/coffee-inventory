@@ -74,3 +74,9 @@ export function getRoastLevelLabel(level: 'light' | 'medium' | 'dark'): string {
   }
   return labels[level] || level
 }
+
+export function calculatePricePerGram(price: number, grams: number): string {
+  if (grams <= 0) return '-'
+  const perGram = price / grams
+  return `¥${perGram.toFixed(2)}/g`
+}

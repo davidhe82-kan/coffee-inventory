@@ -2,7 +2,7 @@ import { format, differenceInDays } from 'date-fns'
 import { Card } from '@/components/ui/Card'
 import { FreshnessBadge } from './FreshnessBadge'
 import { QuantityBar } from './QuantityBar'
-import { cn, getRoastLevelLabel, parseBestPeriod, getFreshnessStatus } from '@/lib/utils'
+import { cn, getRoastLevelLabel, parseBestPeriod, getFreshnessStatus, calculatePricePerGram } from '@/lib/utils'
 import type { CoffeeBean } from '@/features/inventory/types'
 import { MapPin, Building2 } from 'lucide-react'
 
@@ -45,12 +45,15 @@ export function BeanCard({ bean, onClick, className }: BeanCardProps) {
         <FreshnessBadge status={freshness} days={days} />
       </div>
 
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-2">
         <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-coffee-100 text-coffee-700">
           {getRoastLevelLabel(bean.roastLevel)}
         </span>
         <span className="text-xs text-coffee-500">
           烘焙于 {format(roastDate, 'M月d日')}
+        </span>
+        <span className="ml-auto text-xs text-coffee-500">
+          {calculatePricePerGram(bean.price, bean.totalQuantity)}
         </span>
       </div>
 

@@ -10,7 +10,7 @@ import { QuantityBar } from '@/features/inventory/components/QuantityBar'
 import { TransactionList } from '@/features/inventory/components/TransactionList'
 import { useCoffeeBeans } from '@/features/inventory/hooks/useCoffeeBeans'
 import { useTransactions } from '@/features/inventory/hooks/useTransactions'
-import { getRoastLevelLabel, parseBestPeriod, getFreshnessStatus } from '@/lib/utils'
+import { getRoastLevelLabel, parseBestPeriod, getFreshnessStatus, calculatePricePerGram } from '@/lib/utils'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 
 export function BeanDetailPage() {
@@ -132,6 +132,13 @@ export function BeanDetailPage() {
         <Card className="p-6 animate-fade-in opacity-0 stagger-1">
           <h2 className="text-lg font-semibold text-coffee-800 mb-4">库存状态</h2>
           <QuantityBar current={bean.quantity} total={bean.totalQuantity} />
+
+          <div className="flex items-center justify-between mt-4 pt-4 border-t border-coffee-100">
+            <span className="text-sm text-coffee-600">单价</span>
+            <span className="font-medium text-coffee-800">
+              {calculatePricePerGram(bean.price, bean.totalQuantity)}
+            </span>
+          </div>
 
           <div className="flex gap-3 mt-6">
             <Button

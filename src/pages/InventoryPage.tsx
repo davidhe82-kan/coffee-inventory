@@ -7,13 +7,15 @@ import { Button } from '@/components/ui/Button'
 import { QuickAddModal } from '@/components/ui/QuickAddModal'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 
-type SortOption = 'newest' | 'oldest' | 'name' | 'quantity' | 'pricePerGram'
+type SortOption = 'date' | 'name' | 'quantity' | 'pricePerGram'
+type SortDirection = 'asc' | 'desc'
 
 export function InventoryPage() {
   const { beans, loading, refresh } = useCoffeeBeans()
   const navigate = useNavigate()
   const [search, setSearch] = useState('')
-  const [sort, setSort] = useState<SortOption>('newest')
+  const [sort, setSort] = useState<SortOption>('date')
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
   const [adding, setAdding] = useState(false)
   const [showQuickAdd, setShowQuickAdd] = useState(false)
 
@@ -28,22 +30,24 @@ export function InventoryPage() {
       )
     })
     .sort((a, b) => {
+      let result = 0
       switch (sort) {
-        case 'newest':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        case 'oldest':
-          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        case 'date':
+          result = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          break
         case 'name':
-          return a.name.localeCompare(b.name)
+          result = a.name.localeCompare(b.name)
+          break
         case 'quantity':
-          return a.quantity - b.quantity
+          result = a.quantity - b.quantity
+          break
         case 'pricePerGram':
           const priceA = a.totalQuantity > 0 ? a.price / a.totalQuantity : Infinity
           const priceB = b.totalQuantity > 0 ? b.price / b.totalQuantity : Infinity
-          return priceA - priceB
-        default:
-          return 0
+          result = priceA - priceB
+          break
       }
+      return sortDirection === 'asc' ? result : -result
     })
 
   const handleAddSample = async () => {
@@ -115,11 +119,17 @@ export function InventoryPage() {
             </div>
             <select
               value={sort}
-              onChange={(e) => setSort(e.target.value as SortOption)}
+              onChange={(e) => {
+                const newSort = e.target.value as SortOption
+                if (newSort === 'date') {
+                  setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
+                } else {
+                  setSort(newSort)
+                }
+              }}
               className="px-3 py-2 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-700 focus:outline-none focus:ring-2 focus:ring-coffee-500 cursor-pointer appearance-none pr-8 bg-[url('data:image/svg+xml;utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27%235d4037%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M19 9l-7 7-7-7%27/%3E%3C/svg%3E')] bg-[length:1rem] bg-[right_0.5rem_center] bg-no-repeat"
             >
-              <option value="newest">最新添加</option>
-              <option value="oldest">最早添加</option>
+              <option value="date">按日期 {sortDirection === 'desc' ? '↓' : '↑'}</option>
               <option value="name">按名称</option>
               <option value="quantity">按库存</option>
               <option value="pricePerGram">按克单价</option>

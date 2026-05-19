@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button'
 import { QuickAddModal } from '@/components/ui/QuickAddModal'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 
-type SortOption = 'newest' | 'oldest' | 'name' | 'quantity'
+type SortOption = 'newest' | 'oldest' | 'name' | 'quantity' | 'pricePerGram'
 
 export function InventoryPage() {
   const { beans, loading, refresh } = useCoffeeBeans()
@@ -37,6 +37,10 @@ export function InventoryPage() {
           return a.name.localeCompare(b.name)
         case 'quantity':
           return a.quantity - b.quantity
+        case 'pricePerGram':
+          const priceA = a.totalQuantity > 0 ? a.price / a.totalQuantity : Infinity
+          const priceB = b.totalQuantity > 0 ? b.price / b.totalQuantity : Infinity
+          return priceA - priceB
         default:
           return 0
       }
@@ -118,6 +122,7 @@ export function InventoryPage() {
               <option value="oldest">最早添加</option>
               <option value="name">按名称</option>
               <option value="quantity">按库存</option>
+              <option value="pricePerGram">按克单价</option>
             </select>
           </div>
         </div>

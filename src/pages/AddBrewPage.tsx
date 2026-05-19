@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Coffee, Scale, ThermometerSun, Filter, Star, Save } from 'lucide-react'
 import { brewService } from '@/features/brew/services/brewService'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
-import { transactionService } from '@/features/inventory/services/transactionService'
 import type { NewBrewRecord } from '@/features/brew/types'
 import type { CoffeeBean } from '@/features/inventory/types'
 import { Button } from '@/components/ui/Button'
@@ -66,14 +65,6 @@ export function AddBrewPage() {
 
     const newQuantity = Math.max(0, selectedBean.quantity - form.beanWeight)
     await coffeeBeanService.updateQuantity(selectedBean.id, newQuantity)
-
-    await transactionService.create({
-      beanId: selectedBean.id,
-      type: 'consume',
-      amount: form.beanWeight,
-      timestamp: new Date(),
-      notes: `手冲：${selectedBean.name}`,
-    })
 
     navigate('/brew')
   }

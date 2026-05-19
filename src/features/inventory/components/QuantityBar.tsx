@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { cn, formatQuantity } from '@/lib/utils'
 
 interface QuantityBarProps {
@@ -6,7 +7,7 @@ interface QuantityBarProps {
   className?: string
 }
 
-export function QuantityBar({ current, total, className }: QuantityBarProps) {
+export const QuantityBar = memo(function QuantityBar({ current, total, className }: QuantityBarProps) {
   const percent = total > 0 ? Math.round((current / total) * 100) : 0
 
   const getBarColor = () => {
@@ -30,4 +31,4 @@ export function QuantityBar({ current, total, className }: QuantityBarProps) {
       <div className="text-xs text-coffee-400">共 {formatQuantity(total)}</div>
     </div>
   )
-}
+})

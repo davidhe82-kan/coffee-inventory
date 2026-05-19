@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { format } from 'date-fns'
 import { cn } from '@/lib/utils'
 import type { Transaction } from '../types'
@@ -8,7 +9,7 @@ interface TransactionListProps {
   className?: string
 }
 
-export function TransactionList({ transactions, className }: TransactionListProps) {
+export const TransactionList = memo(function TransactionList({ transactions, className }: TransactionListProps) {
   if (transactions.length === 0) {
     return (
       <div className={cn('py-8 text-center text-coffee-500', className)}>
@@ -55,4 +56,4 @@ export function TransactionList({ transactions, className }: TransactionListProp
       })}
     </div>
   )
-}
+})

@@ -4,25 +4,27 @@ import { Search, Plus, SortAsc, Coffee, Clipboard } from 'lucide-react'
 import { BeanCard } from '@/features/inventory/components/BeanCard'
 import { useCoffeeBeans } from '@/features/inventory/hooks/useCoffeeBeans'
 import { Button } from '@/components/ui/Button'
+import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { QuickAddModal } from '@/components/ui/QuickAddModal'
 import { BottomNav } from '@/components/ui/BottomNav'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 
 type SortOption = 'date' | 'name' | 'quantity' | 'pricePerGram'
 type SortDirection = 'asc' | 'desc'
-type SortValue = `${SortOption}_${SortDirection}`
+type SortValue = `${SortOption}:${SortDirection}`
 
 export function InventoryPage() {
   const { beans, loading, refresh } = useCoffeeBeans()
   const navigate = useNavigate()
   const location = useLocation()
   const [search, setSearch] = useState('')
-  const [sortValue, setSortValue] = useState<SortValue>('date_desc')
+  const [sortValue, setSortValue] = useState<SortValue>('date:desc')
   const [adding, setAdding] = useState(false)
   const [showQuickAdd, setShowQuickAdd] = useState(false)
 
   const parseSortValue = (value: SortValue): [SortOption, SortDirection] => {
-    const [sort, direction] = value.split('_') as [SortOption, SortDirection]
+    const [sort, direction] = value.split(':') as [SortOption, SortDirection]
     return [sort, direction]
   }
 
@@ -116,33 +118,31 @@ export function InventoryPage() {
           </div>
 
           <div className="flex gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-coffee-400" />
-              <input
-                type="text"
+            <div className="flex-1">
+              <Input
+                icon={<Search className="w-4 h-4" />}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="搜索咖啡豆..."
-                className="w-full pl-10 pr-4 py-2 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500 transition-colors"
               />
             </div>
             <div className="flex items-center gap-2">
-              <select
+              <Select
                 value={sort}
                 onChange={(e) => {
                   const newSort = e.target.value as SortOption
-                  setSortValue(`${newSort}_${sortDirection}`)
+                  setSortValue(`${newSort}:${sortDirection}`)
                 }}
-                className="px-3 py-2 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-700 focus:outline-none focus:ring-2 focus:ring-coffee-500 cursor-pointer"
-              >
-                <option value="date">按烘焙日期</option>
-                <option value="name">按名称</option>
-                <option value="quantity">按库存</option>
-                <option value="pricePerGram">按克单价</option>
-              </select>
+                options={[
+                  { value: 'date', label: '按烘焙日期' },
+                  { value: 'name', label: '按名称' },
+                  { value: 'quantity', label: '按库存' },
+                  { value: 'pricePerGram', label: '按克单价' },
+                ]}
+              />
               <button
                 onClick={() => {
-                  setSortValue(`${sort}_${sortDirection === 'asc' ? 'desc' : 'asc'}`)
+                  setSortValue(`${sort}:${sortDirection === 'asc' ? 'desc' : 'asc'}`)
                 }}
                 className="px-3 py-2 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-700 hover:bg-coffee-100 font-bold"
               >

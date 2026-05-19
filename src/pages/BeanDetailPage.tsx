@@ -1,10 +1,11 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { format, differenceInDays } from 'date-fns'
-import { ArrowLeft, Edit2, Trash2, ArrowDownLeft, ArrowUpRight, X, Coffee, Star, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Edit2, Trash2, ArrowDownLeft, ArrowUpRight, Coffee, Star, ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import { Modal } from '@/components/ui/Modal'
 import { FreshnessBadge } from '@/features/inventory/components/FreshnessBadge'
 import { QuantityBar } from '@/features/inventory/components/QuantityBar'
 import { TransactionList } from '@/features/inventory/components/TransactionList'
@@ -124,7 +125,7 @@ export function BeanDetailPage() {
       </header>
 
       <main className="max-w-2xl mx-auto px-5 py-6 space-y-5">
-        <Card className="p-6 animate-fade-in opacity-0">
+        <Card className="p-6 animate-fade-in">
           <div className="flex items-start justify-between mb-4">
             <div>
               <h1 className="text-2xl font-bold text-coffee-900">{bean.name}</h1>
@@ -150,7 +151,7 @@ export function BeanDetailPage() {
           )}
         </Card>
 
-        <Card className="p-6 animate-fade-in opacity-0 stagger-1">
+        <Card className="p-6 animate-fade-in stagger-1">
           <h2 className="text-lg font-semibold text-coffee-800 mb-4">库存状态</h2>
           <QuantityBar current={bean.quantity} total={bean.totalQuantity} />
 
@@ -182,14 +183,14 @@ export function BeanDetailPage() {
         </Card>
 
         {bean.notes && (
-          <Card className="p-6 animate-fade-in opacity-0 stagger-2">
+          <Card className="p-6 animate-fade-in stagger-2">
             <h2 className="text-lg font-semibold text-coffee-800 mb-3">详细信息</h2>
             <p className="text-coffee-600 leading-relaxed whitespace-pre-line">{bean.notes}</p>
           </Card>
         )}
 
         {brewRecords.length > 0 && (
-          <Card className="p-6 animate-fade-in opacity-0 stagger-3">
+          <Card className="p-6 animate-fade-in stagger-3">
             <h2 className="text-lg font-semibold text-coffee-800 mb-4 flex items-center gap-2">
               <Coffee className="w-5 h-5" />
               手冲记录
@@ -232,66 +233,51 @@ export function BeanDetailPage() {
           </Card>
         )}
 
-        <Card className="p-6 animate-fade-in opacity-0 stagger-3">
+        <Card className="p-6 animate-fade-in stagger-3">
           <h2 className="text-lg font-semibold text-coffee-800 mb-4">操作记录</h2>
           <TransactionList transactions={transactions} />
         </Card>
       </main>
 
-      {showTxModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-          <div
-            className="absolute inset-0 bg-coffee-950/50 backdrop-blur-sm"
-            onClick={() => setShowTxModal(false)}
+      <Modal
+        isOpen={showTxModal}
+        onClose={() => setShowTxModal(false)}
+        title={txType === 'add' ? '入库' : '出库'}
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              className="flex-1"
+              onClick={() => setShowTxModal(false)}
+            >
+              取消
+            </Button>
+            <Button
+              className="flex-1"
+              onClick={handleTransaction}
+              disabled={loading || txAmount <= 0}
+            >
+              确认
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Input
+            label="数量 (g)"
+            type="number"
+            value={txAmount}
+            onChange={(e) => setTxAmount(Number(e.target.value))}
+            min={1}
           />
-          <div className="relative w-full max-w-md bg-cream-50 rounded-t-2xl sm:rounded-2xl p-6 shadow-xl animate-slide-up">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-coffee-800">
-                {txType === 'add' ? '入库' : '出库'}
-              </h3>
-              <button
-                onClick={() => setShowTxModal(false)}
-                className="p-2 rounded-full hover:bg-coffee-100 transition-colors"
-              >
-                <X className="w-5 h-5 text-coffee-500" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <Input
-                label="数量 (g)"
-                type="number"
-                value={txAmount}
-                onChange={(e) => setTxAmount(Number(e.target.value))}
-                min={1}
-              />
-              <Input
-                label="备注"
-                value={txNotes}
-                onChange={(e) => setTxNotes(e.target.value)}
-                placeholder="可选"
-              />
-            </div>
-
-            <div className="flex gap-3 mt-6">
-              <Button
-                variant="secondary"
-                className="flex-1"
-                onClick={() => setShowTxModal(false)}
-              >
-                取消
-              </Button>
-              <Button
-                className="flex-1"
-                onClick={handleTransaction}
-                disabled={loading || txAmount <= 0}
-              >
-                确认
-              </Button>
-            </div>
-          </div>
+          <Input
+            label="备注"
+            value={txNotes}
+            onChange={(e) => setTxNotes(e.target.value)}
+            placeholder="可选"
+          />
         </div>
-      )}
+      </Modal>
     </div>
   )
 }

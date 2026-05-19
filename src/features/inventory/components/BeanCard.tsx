@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { format, differenceInDays } from 'date-fns'
 import { Card } from '@/components/ui/Card'
 import { FreshnessBadge } from './FreshnessBadge'
@@ -12,7 +13,7 @@ interface BeanCardProps {
   className?: string
 }
 
-export function BeanCard({ bean, onClick, className }: BeanCardProps) {
+export const BeanCard = memo(function BeanCard({ bean, onClick, className }: BeanCardProps) {
   const roastDate = new Date(bean.roastDate)
   const days = differenceInDays(new Date(), roastDate)
   const bestPeriod = parseBestPeriod(bean.notes)
@@ -21,7 +22,7 @@ export function BeanCard({ bean, onClick, className }: BeanCardProps) {
   return (
     <Card
       hover
-      className={cn('p-5 animate-fade-in opacity-0', className)}
+      className={cn('p-5 animate-fade-in', className)}
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-3 mb-4">
@@ -60,4 +61,4 @@ export function BeanCard({ bean, onClick, className }: BeanCardProps) {
       <QuantityBar current={bean.quantity} total={bean.totalQuantity} />
     </Card>
   )
-}
+})

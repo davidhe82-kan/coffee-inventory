@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { cn } from '@/lib/utils'
 import type { FreshnessStatus } from '@/features/inventory/types'
 import { Flame } from 'lucide-react'
@@ -9,16 +10,16 @@ interface FreshnessBadgeProps {
   className?: string
 }
 
-export function FreshnessBadge({ status, days, bestPeriod: _bestPeriod = 90, className }: FreshnessBadgeProps) {
+export const FreshnessBadge = memo(function FreshnessBadge({ status, days, bestPeriod: _bestPeriod = 90, className }: FreshnessBadgeProps) {
   const statusStyles = {
-    fresh: 'bg-blue-100 text-blue-800 border-blue-200',
+    fresh: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     good: 'bg-green-100 text-green-800 border-green-200',
     aging: 'bg-orange-100 text-orange-800 border-orange-200',
     expired: 'bg-red-100 text-red-800 border-red-200',
   }
 
   const flameColors = {
-    fresh: 'text-blue-600',
+    fresh: 'text-emerald-600',
     good: 'text-green-600',
     aging: 'text-orange-600',
     expired: 'text-red-600',
@@ -44,4 +45,4 @@ export function FreshnessBadge({ status, days, bestPeriod: _bestPeriod = 90, cla
       <span className="text-xs opacity-75">· {days}天</span>
     </div>
   )
-}
+})

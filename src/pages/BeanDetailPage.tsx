@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { format, differenceInDays } from 'date-fns'
-import { ArrowLeft, Edit2, Trash2, ArrowDownLeft, ArrowUpRight, X } from 'lucide-react'
+import { ArrowLeft, Edit2, Trash2, ArrowDownLeft, ArrowUpRight, X, Coffee, Star, ChevronRight } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -10,6 +10,8 @@ import { QuantityBar } from '@/features/inventory/components/QuantityBar'
 import { TransactionList } from '@/features/inventory/components/TransactionList'
 import { useCoffeeBeans } from '@/features/inventory/hooks/useCoffeeBeans'
 import { useTransactions } from '@/features/inventory/hooks/useTransactions'
+import { brewService } from '@/features/brew/services/brewService'
+import type { BrewRecord } from '@/features/brew/types'
 import { getRoastLevelLabel, parseBestPeriod, getFreshnessStatus, calculatePricePerGram } from '@/lib/utils'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 
@@ -18,6 +20,7 @@ export function BeanDetailPage() {
   const navigate = useNavigate()
   const { beans, deleteBean, refresh } = useCoffeeBeans()
   const { transactions, addTransaction } = useTransactions(id)
+  const [brewRecords, setBrewRecords] = useState<BrewRecord[]>([])
   const [showTxModal, setShowTxModal] = useState(false)
   const [txType, setTxType] = useState<'add' | 'consume'>('consume')
   const [txAmount, setTxAmount] = useState(18)
@@ -25,6 +28,16 @@ export function BeanDetailPage() {
   const [loading, setLoading] = useState(false)
 
   const bean = beans.find((b) => b.id === id)
+
+  useEffect(() => {
+    loadBrewRecords()
+  }, [id])
+
+  const loadBrewRecords = async () => {
+    if (!id) return
+    const all = await brewService.getAll()
+    setBrewRecords(all.filter((r) => r.beanId === id))
+  }
 
   if (!bean) {
     return (
@@ -79,6 +92,14 @@ export function BeanDetailPage() {
     } catch (error) {
       console.error('Failed to delete bean:', error)
     }
+  }
+
+  const formatBrewDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('zh-CN', {
+      month: 'long',
+      day: 'numeric',
+      timeZone: 'Asia/Shanghai',
+    })
   }
 
   return (
@@ -164,6 +185,50 @@ export function BeanDetailPage() {
           <Card className="p-6 animate-fade-in opacity-0 stagger-2">
             <h2 className="text-lg font-semibold text-coffee-800 mb-3">详细信息</h2>
             <p className="text-coffee-600 leading-relaxed whitespace-pre-line">{bean.notes}</p>
+          </Card>
+        )}
+
+        {brewRecords.length > 0 && (
+          <Card className="p-6 animate-fade-in opacity-0 stagger-3">
+            <h2 className="text-lg font-semibold text-coffee-800 mb-4 flex items-center gap-2">
+              <Coffee className="w-5 h-5" />
+              手冲记录
+              <span className="text-sm font-normal text-coffee-400">({brewRecords.length}次)</span>
+            </h2>
+            <div className="space-y-2">
+              {brewRecords.map((record) => (
+                <button
+                  key={record.id}
+                  onClick={() => navigate(`/brew/${record.id}`)}
+                  className="w-full flex items-center gap-3 p-3 rounded-lg bg-cream-50 border border-coffee-100 hover:border-coffee-300 hover:bg-cream-100 transition-colors text-left"
+                >
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-3.5 h-3.5 ${
+                          i < record.rating ? 'fill-amber-400 text-amber-400' : 'text-coffee-200'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-coffee-700 font-medium">
+                        {record.beanWeight}g
+                      </span>
+                      {record.method && (
+                        <span className="text-xs text-coffee-400">{record.method}</span>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-xs text-coffee-400 flex-shrink-0">
+                    {formatBrewDate(record.createdAt)}
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-coffee-300 flex-shrink-0" />
+                </button>
+              ))}
+            </div>
           </Card>
         )}
 

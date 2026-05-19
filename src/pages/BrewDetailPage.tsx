@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import { ArrowLeft, Edit2, Trash2, Coffee, Scale, ThermometerSun, Filter, Star, RotateCcw } from 'lucide-react'
 import { brewService } from '@/features/brew/services/brewService'
+import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 import type { BrewRecord } from '@/features/brew/types'
 import { Button } from '@/components/ui/Button'
 import { BottomNav } from '@/components/ui/BottomNav'
@@ -28,6 +29,12 @@ export function BrewDetailPage() {
   const handleDelete = async () => {
     if (!record || !confirm('确定要删除这条手冲记录吗？')) return
     await brewService.delete(record.id)
+
+    const bean = await coffeeBeanService.getById(record.beanId)
+    if (bean) {
+      await coffeeBeanService.updateQuantity(bean.id, bean.quantity + record.beanWeight)
+    }
+
     navigate('/brew')
   }
 

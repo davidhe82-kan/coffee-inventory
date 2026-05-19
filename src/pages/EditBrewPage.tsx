@@ -33,6 +33,8 @@ export function EditBrewPage() {
   })
 
   const [submitting, setSubmitting] = useState(false)
+  const [originalBeanId, setOriginalBeanId] = useState('')
+  const [originalBeanWeight, setOriginalBeanWeight] = useState(0)
 
   useEffect(() => {
     loadData()
@@ -58,6 +60,8 @@ export function EditBrewPage() {
       })
       const bean = beansData.find((b) => b.id === record.beanId) || null
       setSelectedBean(bean)
+      setOriginalBeanId(record.beanId)
+      setOriginalBeanWeight(record.beanWeight)
     }
     setLoading(false)
   }
@@ -81,6 +85,27 @@ export function EditBrewPage() {
     }
 
     await brewService.update(id, record)
+
+    const sameBean = selectedBean.id === originalBeanId
+    if (sameBean) {
+      const delta = originalBeanWeight - form.beanWeight
+      if (delta !== 0) {
+        const bean = await coffeeBeanService.getById(selectedBean.id)
+        if (bean) {
+          await coffeeBeanService.updateQuantity(bean.id, Math.max(0, bean.quantity + delta))
+        }
+      }
+    } else {
+      const oldBean = await coffeeBeanService.getById(originalBeanId)
+      if (oldBean) {
+        await coffeeBeanService.updateQuantity(oldBean.id, oldBean.quantity + originalBeanWeight)
+      }
+      const newBean = await coffeeBeanService.getById(selectedBean.id)
+      if (newBean) {
+        await coffeeBeanService.updateQuantity(newBean.id, Math.max(0, newBean.quantity - form.beanWeight))
+      }
+    }
+
     navigate(`/brew/${id}`)
   }
 

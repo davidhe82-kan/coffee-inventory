@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { format, differenceInDays } from 'date-fns'
-import { ArrowLeft, Edit2, Trash2, ArrowDownLeft, ArrowUpRight, Coffee, Star, ChevronRight } from 'lucide-react'
+import { ArrowLeft, Edit2, Trash2, ArrowDownLeft, ArrowUpRight, Coffee, Star, ChevronRight, Archive, RotateCw } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -19,7 +19,7 @@ import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanServi
 export function BeanDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { beans, loading: beansLoading, deleteBean, refresh } = useCoffeeBeans()
+  const { beans, loading: beansLoading, deleteBean, refresh, archiveBean } = useCoffeeBeans()
   const { transactions, addTransaction } = useTransactions(id)
   const [brewRecords, setBrewRecords] = useState<BrewRecord[]>([])
   const [showTxModal, setShowTxModal] = useState(false)
@@ -106,6 +106,16 @@ export function BeanDetailPage() {
     }
   }
 
+  const handleArchive = async () => {
+    const action = bean.isArchived ? '取消归档' : '归档'
+    if (!confirm(`确定要${action}这款咖啡豆吗？`)) return
+    try {
+      await archiveBean(bean.id, !bean.isArchived)
+    } catch (error) {
+      console.error('Failed to archive bean:', error)
+    }
+  }
+
   const formatBrewDate = (date: Date) => {
     return new Date(date).toLocaleDateString('zh-CN', {
       month: 'long',
@@ -123,6 +133,13 @@ export function BeanDetailPage() {
             <span className="text-sm font-medium">返回</span>
           </Link>
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={handleArchive}>
+              {bean.isArchived ? (
+                <RotateCw className="w-4 h-4 text-green-600" />
+              ) : (
+                <Archive className="w-4 h-4 text-coffee-600" />
+              )}
+            </Button>
             <Link to={`/bean/${bean.id}/edit`}>
               <Button variant="ghost" size="sm">
                 <Edit2 className="w-4 h-4" />

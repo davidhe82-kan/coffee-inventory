@@ -44,6 +44,15 @@ export function useCoffeeBeans() {
     setBeans((prev) => prev.filter((bean) => bean.id !== id))
   }, [])
 
+  const archiveBean = useCallback(async (id: string, archive: boolean) => {
+    await coffeeBeanService.archiveBean(id, archive)
+    setBeans((prev) =>
+      prev.map((bean) =>
+        bean.id === id ? { ...bean, isArchived: archive } : bean
+      )
+    )
+  }, [])
+
   const getBeanById = useCallback((id: string) => {
     return beans.find((bean) => bean.id === id) || null
   }, [beans])
@@ -55,6 +64,7 @@ export function useCoffeeBeans() {
     addBean,
     updateBean,
     deleteBean,
+    archiveBean,
     getBeanById,
     refresh: fetchBeans,
   }

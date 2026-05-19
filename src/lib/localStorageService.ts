@@ -12,6 +12,7 @@ export interface LocalCoffeeBean {
   totalQuantity: number
   price: number
   notes: string
+  isArchived: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -45,10 +46,11 @@ export const localStorageService = {
     return loadFromStorage<LocalCoffeeBean>(STORAGE_KEY)
   },
 
-  addBean(bean: Omit<LocalCoffeeBean, 'id' | 'createdAt' | 'updatedAt'>): LocalCoffeeBean {
+  addBean(bean: Omit<LocalCoffeeBean, 'id' | 'createdAt' | 'updatedAt' | 'isArchived'>): LocalCoffeeBean {
     const now = new Date()
     const newBean: LocalCoffeeBean = {
       ...bean,
+      isArchived: false,
       id: generateId(),
       createdAt: now,
       updatedAt: now,
@@ -85,6 +87,7 @@ export const sampleBeanData = {
   totalQuantity: 15,
   price: 87,
   notes: '豆种：瑰夏 | 处理法：日晒 | 庄园/处理站：索菲亚 | 风味：荔枝花、血橙、荔枝 | 最佳饮用期：7天~90天',
+  isArchived: false,
 }
 
 export function addSampleBean(): LocalCoffeeBean {

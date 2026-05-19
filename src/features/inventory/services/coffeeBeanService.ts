@@ -30,6 +30,7 @@ export const coffeeBeanService = {
         totalQuantity: row.total_quantity || 0,
         price: row.price || 0,
         notes: row.notes || '',
+        isArchived: row.is_archived || false,
         createdAt: new Date(row.created_at + 'Z'),
         updatedAt: new Date(row.updated_at + 'Z'),
       }))
@@ -62,6 +63,7 @@ export const coffeeBeanService = {
         totalQuantity: data.total_quantity || 0,
         price: data.price || 0,
         notes: data.notes || '',
+        isArchived: data.is_archived || false,
         createdAt: new Date(data.created_at + 'Z'),
         updatedAt: new Date(data.updated_at + 'Z'),
       }
@@ -83,6 +85,7 @@ export const coffeeBeanService = {
       total_quantity: data.totalQuantity,
       price: data.price,
       notes: data.notes || '',
+      is_archived: false,
       created_at: now,
       updated_at: now,
     }
@@ -110,6 +113,7 @@ export const coffeeBeanService = {
         totalQuantity: result.total_quantity,
         price: result.price,
         notes: result.notes || '',
+        isArchived: result.is_archived || false,
         createdAt: new Date(result.created_at),
         updatedAt: new Date(result.updated_at),
       }
@@ -156,7 +160,13 @@ export const coffeeBeanService = {
   },
 
   async updateQuantity(id: string, quantity: number): Promise<void> {
-    localStorageService.updateBeanQuantity(id, quantity)
+    const allBeans = localStorageService.getAllBeans()
+    const beanIndex = allBeans.findIndex((b) => b.id === id)
+    if (beanIndex !== -1) {
+      allBeans[beanIndex].quantity = quantity
+      allBeans[beanIndex].updatedAt = new Date()
+      localStorage.setItem('coffee_beans_local', JSON.stringify(allBeans))
+    }
 
     if (isSupabaseConfigured()) {
       const { error } = await supabase
@@ -169,6 +179,30 @@ export const coffeeBeanService = {
 
       if (error) {
         console.error('Supabase updateQuantity error:', error)
+      }
+    }
+  },
+
+  async archiveBean(id: string, archive: boolean): Promise<void> {
+    const allBeans = localStorageService.getAllBeans()
+    const beanIndex = allBeans.findIndex((b) => b.id === id)
+    if (beanIndex !== -1) {
+      allBeans[beanIndex].isArchived = archive
+      allBeans[beanIndex].updatedAt = new Date()
+      localStorage.setItem('coffee_beans_local', JSON.stringify(allBeans))
+    }
+
+    if (isSupabaseConfigured()) {
+      const { error } = await supabase
+        .from('coffee_beans')
+        .update({
+          is_archived: archive,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+
+      if (error) {
+        console.error('Supabase archiveBean error:', error)
       }
     }
   },

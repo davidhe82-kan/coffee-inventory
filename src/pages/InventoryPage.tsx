@@ -31,6 +31,7 @@ export function InventoryPage() {
   const [sort, sortDirection] = parseSortValue(sortValue)
 
   const filteredBeans = beans
+    .filter((bean) => !bean.isArchived)
     .filter((bean) => {
       if (!search) return true
       const query = search.toLowerCase()

@@ -13,6 +13,7 @@ export interface CoffeeBean {
   totalQuantity: number
   price: number
   notes: string
+  isArchived: boolean
   createdAt: Date
   updatedAt: Date
 }

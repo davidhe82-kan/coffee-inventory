@@ -66,10 +66,9 @@ export const brewService = {
         rating: data.rating,
         notes: data.notes,
         createdAt: new Date(data.created_at + '+08:00'),
-      }))
+      }
     }
 
-    const records = await this.getAll()
     const stored = localStorage.getItem('brew_records')
     if (!stored) return null
     const parsed = JSON.parse(stored).map((row: BrewRecord) => ({

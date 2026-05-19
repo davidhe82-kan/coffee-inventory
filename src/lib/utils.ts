@@ -1,55 +1,59 @@
 import { differenceInDays } from 'date-fns'
-import type { FreshnessStatus, CoffeeBean } from '@/features/inventory/types'
+import type { FreshnessStatus, BestPeriod, CoffeeBean } from '@/features/inventory/types'
 
 export function cn(...classes: (string | undefined | null | false)[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export function parseBestPeriod(notes: string): number {
-  const rangeMatch = notes.match(/最佳饮用期[：:]\s*\d+\s*天~\s*(\d+)\s*天/)
+export function parseBestPeriod(notes: string): BestPeriod {
+  const rangeMatch = notes.match(/最佳饮用期[：:]\s*(\d+)\s*天~\s*(\d+)\s*天/)
   if (rangeMatch) {
-    const days = parseInt(rangeMatch[1], 10)
-    if (days > 0) return days
+    return { restDays: parseInt(rangeMatch[1], 10), bestDays: parseInt(rangeMatch[2], 10) }
   }
 
   const singleMatch = notes.match(/最佳饮用期[：:]\s*(\d+)\s*天/)
   if (singleMatch) {
-    const days = parseInt(singleMatch[1], 10)
-    if (days > 0) return days
+    return { restDays: 7, bestDays: parseInt(singleMatch[1], 10) }
   }
 
-  return 90
+  return { restDays: 7, bestDays: 90 }
+}
+
+export function formatBestPeriod(restDays: number, bestDays: number): string {
+  return `最佳饮用期：${restDays}天~${bestDays}天`
 }
 
 export function getDaysSinceRoast(roastDate: Date): number {
   return differenceInDays(new Date(), roastDate)
 }
 
-export function getFreshnessStatus(roastDate: Date, bestPeriod: number = 90): FreshnessStatus {
+export function getFreshnessStatus(roastDate: Date, bestPeriod?: BestPeriod): FreshnessStatus {
   const days = getDaysSinceRoast(roastDate)
+  const period = bestPeriod || { restDays: 7, bestDays: 90 }
 
-  if (days < 7) return 'fresh'
-  if (days <= bestPeriod) return 'good'
-  if (days <= bestPeriod * 1.3) return 'aging'
+  if (days < period.restDays) return 'resting'
+  if (days <= period.bestDays) return 'good'
+  if (days <= period.bestDays + 14) return 'aging'
   return 'expired'
 }
 
 export function getFreshnessLabel(status: FreshnessStatus): string {
   const labels: Record<FreshnessStatus, string> = {
-    fresh: '新鲜',
+    resting: '养豆中',
     good: '最佳饮用期',
-    aging: '接近过期',
+    aging: '已过最佳期',
     expired: '已过期',
   }
   return labels[status]
 }
 
-export function getFreshnessDescription(status: FreshnessStatus, bestPeriod: number): string {
+export function getFreshnessDescription(status: FreshnessStatus, bestPeriod?: BestPeriod): string {
+  const period = bestPeriod || { restDays: 7, bestDays: 90 }
   const descriptions: Record<FreshnessStatus, string> = {
-    fresh: '刚烘焙不久，排气中',
-    good: `在最佳饮用期内`,
-    aging: `即将超过${bestPeriod}天最佳期`,
-    expired: '已超过最佳饮用期',
+    resting: `建议养豆 ${period.restDays} 天后饮用`,
+    good: `${period.restDays}~${period.bestDays} 天最佳饮用期`,
+    aging: `已超过 ${period.bestDays} 天最佳期`,
+    expired: '已过最佳饮用期，风味明显下降',
   }
   return descriptions[status]
 }

@@ -49,7 +49,7 @@ export const BeanCard = memo(function BeanCard({ bean, onClick, className }: Bea
             )}
           </div>
         </div>
-        <FreshnessBadge status={freshness} days={days} />
+        <FreshnessBadge status={freshness} days={days} bestPeriod={bestPeriod} />
       </div>
 
       <div className="flex items-center gap-2 mb-2">

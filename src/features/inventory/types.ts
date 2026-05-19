@@ -26,7 +26,12 @@ export interface Transaction {
   notes: string
 }
 
-export type FreshnessStatus = 'fresh' | 'good' | 'aging' | 'expired'
+export type FreshnessStatus = 'resting' | 'good' | 'aging' | 'expired'
+
+export interface BestPeriod {
+  restDays: number
+  bestDays: number
+}
 
 export interface CoffeeBeanFormData {
   name: string
@@ -38,4 +43,6 @@ export interface CoffeeBeanFormData {
   totalQuantity: number
   price: number
   notes: string
+  restDays?: number
+  bestDays?: number
 }

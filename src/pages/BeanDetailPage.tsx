@@ -133,7 +133,7 @@ export function BeanDetailPage() {
                 {bean.origin || '未知产地'} · {bean.roaster || '未知烘焙商'}
               </p>
             </div>
-            <FreshnessBadge status={freshness} days={days} />
+            <FreshnessBadge status={freshness} days={days} bestPeriod={bestPeriod} />
           </div>
 
           <div className="flex items-center gap-3">
@@ -144,11 +144,9 @@ export function BeanDetailPage() {
               烘焙日期：{format(roastDate, 'yyyy年M月d日')}
             </span>
           </div>
-          {bestPeriod !== 90 && (
-            <p className="text-xs text-coffee-400 mt-2">
-              最佳饮用期：{bestPeriod}天
-            </p>
-          )}
+          <p className="text-xs text-coffee-500 mt-2 bg-cream-50 rounded-lg px-3 py-2">
+            🌿 养豆期 {bestPeriod.restDays} 天 · 最佳饮用期 第 {bestPeriod.restDays}~{bestPeriod.bestDays} 天
+          </p>
         </Card>
 
         <Card className="p-6 animate-fade-in stagger-1">

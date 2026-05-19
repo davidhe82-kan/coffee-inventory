@@ -196,7 +196,7 @@ export const coffeeBeanService = {
       quantity: 15,
       totalQuantity: 15,
       price: 87,
-      notes: '豆种：瑰夏 | 处理法：日晒 | 庄园/处理站：索菲亚 | 风味：荔枝花、血橙、荔枝 | 最佳饮用期：90天',
+      notes: '豆种：瑰夏 | 处理法：日晒 | 庄园/处理站：索菲亚 | 风味：荔枝花、血橙、荔枝 | 最佳饮用期：7天~90天',
     })
   },
 }

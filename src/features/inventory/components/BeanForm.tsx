@@ -5,6 +5,7 @@ import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import { useCoffeeBeans } from '../hooks/useCoffeeBeans'
 import type { CoffeeBeanFormData, RoastLevel } from '../types'
+import { parseBestPeriod, formatBestPeriod } from '@/lib/utils'
 import { ArrowLeft, Save } from 'lucide-react'
 
 interface BeanFormProps {
@@ -13,10 +14,21 @@ interface BeanFormProps {
   isEdit?: boolean
 }
 
+function stripBestPeriodFromNotes(notes: string): string {
+  return notes.replace(/\s*\|?\s*最佳饮用期[：:]\s*\d+\s*天~\s*\d+\s*天\s*\|?\s*/, '')
+    .replace(/\s*\|?\s*最佳饮用期[：:]\s*\d+\s*天\s*\|?\s*/, '')
+    .trim()
+}
+
 export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps) {
   const navigate = useNavigate()
   const { addBean, updateBean } = useCoffeeBeans()
   const [loading, setLoading] = useState(false)
+
+  const rawNotes = initialData?.notes || ''
+  const period = parseBestPeriod(rawNotes)
+  const cleanedNotes = stripBestPeriodFromNotes(rawNotes)
+
   const [formData, setFormData] = useState<CoffeeBeanFormData>({
     name: initialData?.name || '',
     origin: initialData?.origin || '',
@@ -26,7 +38,9 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
     quantity: initialData?.quantity || 227,
     totalQuantity: initialData?.totalQuantity || 227,
     price: initialData?.price || 0,
-    notes: initialData?.notes || '',
+    notes: cleanedNotes,
+    restDays: initialData?.restDays || period.restDays,
+    bestDays: initialData?.bestDays || period.bestDays,
   })
 
   const handleSubmit = async (e: FormEvent) => {
@@ -35,11 +49,16 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
 
     try {
       setLoading(true)
+      const periodText = formatBestPeriod(formData.restDays || 7, formData.bestDays || 90)
+      const finalNotes = formData.notes.trim()
+        ? `${formData.notes.trim()} | ${periodText}`
+        : periodText
+
       if (isEdit && beanId) {
-        await updateBean(beanId, formData)
+        await updateBean(beanId, { ...formData, notes: finalNotes })
         navigate(`/bean/${beanId}`)
       } else {
-        const newBean = await addBean(formData)
+        const newBean = await addBean({ ...formData, notes: finalNotes })
         navigate(`/bean/${newBean.id}`)
       }
     } catch (error) {
@@ -137,6 +156,25 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           step={0.01}
         />
 
+        <div className="grid grid-cols-2 gap-4">
+          <Input
+            label="养豆期 (天)"
+            type="number"
+            value={formData.restDays}
+            onChange={(e) => handleChange('restDays', Number(e.target.value))}
+            min={0}
+            max={90}
+          />
+          <Input
+            label="最佳饮用期截止 (天)"
+            type="number"
+            value={formData.bestDays}
+            onChange={(e) => handleChange('bestDays', Number(e.target.value))}
+            min={(formData.restDays || 7) + 1}
+            max={365}
+          />
+        </div>
+
         <div className="md:col-span-2">
           <label className="text-sm font-medium text-coffee-700 block mb-1.5">
             风味备注
@@ -152,7 +190,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
       </div>
 
       <div className="flex gap-3 pt-4">
-        <Button type="submit" disabled={loading || !formData.name.trim()}>
+        <Button type="submit" disabled={loading || !formData.name.trim() || (formData.bestDays || 90) <= (formData.restDays || 7)}>
           <Save className="w-4 h-4 mr-2" />
           {loading ? '保存中...' : '保存'}
         </Button>

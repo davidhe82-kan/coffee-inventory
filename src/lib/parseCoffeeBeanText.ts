@@ -27,16 +27,16 @@ function parseDate(text: string): Date | null {
   return null
 }
 
-function parseBestPeriodValue(value: string): number {
-  const rangeMatch = value.match(/(\d+)\s*天~\s*(\d+)\s*天/)
+function parseBestPeriodValue(value: string): string {
+  const rangeMatch = value.match(/\d+\s*天~\s*\d+\s*天/)
   if (rangeMatch) {
-    return parseInt(rangeMatch[2], 10)
+    return rangeMatch[0].replace(/\s+/g, '')
   }
-  const singleMatch = value.match(/(\d+)\s*天/)
+  const singleMatch = value.match(/\d+\s*天/)
   if (singleMatch) {
-    return parseInt(singleMatch[1], 10)
+    return singleMatch[0].replace(/\s+/g, '')
   }
-  return 90
+  return '90天'
 }
 
 export function parseCoffeeBeanText(text: string): ParseResult {
@@ -116,7 +116,7 @@ export function parseCoffeeBeanText(text: string): ParseResult {
       case '最佳饮用期':
       case 'best period':
         const period = parseBestPeriodValue(value)
-        notesFields.push(`最佳饮用期：${period}天`)
+        notesFields.push(`最佳饮用期：${period}`)
         break
       default:
         break

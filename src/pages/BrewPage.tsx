@@ -54,14 +54,15 @@ export function BrewPage() {
 
   return (
     <div className="min-h-screen pb-20">
-      <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-200 px-5 py-4">
+      <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-300/60 shadow-[0_2px_8px_rgba(62,39,35,0.05)] px-5 py-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-3">
             <div>
-              <h1 className="text-2xl font-bold text-coffee-900">手冲记录</h1>
-              <p className="text-sm text-coffee-600 mt-0.5">
-                共 {filteredRecords.length} {searchKeyword ? `/${records.length}` : ''} 次记录
+              <h1 className="text-3xl font-bold text-coffee-900 tracking-tight leading-tight">手冲记录</h1>
+              <p className="text-sm text-coffee-600 mt-1">
+                共 <span className="text-accent-500 font-semibold">{filteredRecords.length}</span> {searchKeyword ? `/${records.length}` : ''} 次记录
               </p>
+              <div className="mt-3 w-12 h-0.5 bg-accent-400/40 rounded-full" />
             </div>
             <Link to="/brew/add">
               <Button>
@@ -105,8 +106,8 @@ export function BrewPage() {
             <h3 className="text-lg font-medium text-coffee-700 mb-2">
               {searchKeyword ? '没有找到匹配的记录' : '还没有手冲记录'}
             </h3>
-            <p className="text-sm text-coffee-500 mb-6">
-              {searchKeyword ? '换个关键词试试' : '记录你的每一次完美萃取'}
+            <p className="text-sm text-coffee-500 mb-6 max-w-xs mx-auto leading-relaxed">
+              {searchKeyword ? '换个关键词试试' : '每一杯手冲都是独一无二的。记录水温、研磨度、滤杯，找到你的黄金配比。'}
             </p>
             {searchKeyword ? (
               <Button onClick={() => setSearchKeyword('')}>
@@ -147,7 +148,7 @@ export function BrewPage() {
                         <Star
                           key={i}
                           className={`w-4 h-4 ${
-                            i < record.rating ? 'fill-amber-400 text-amber-400' : 'text-coffee-200'
+                            i < record.rating ? 'fill-accent-400 text-accent-400' : 'text-coffee-200'
                           }`}
                         />
                       ))}

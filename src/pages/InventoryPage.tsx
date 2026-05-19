@@ -79,14 +79,15 @@ export function InventoryPage() {
 
   return (
     <div className="min-h-screen pb-20">
-      <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-200 px-5 py-4">
+      <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-300/60 shadow-[0_2px_8px_rgba(62,39,35,0.05)] px-5 py-4">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-coffee-900">咖啡豆库存</h1>
-              <p className="text-sm text-coffee-600 mt-0.5">
-                共 {beans.length} 种咖啡豆
+              <h1 className="text-3xl font-bold text-coffee-900 tracking-tight leading-tight">咖啡豆库存</h1>
+              <p className="text-sm text-coffee-600 mt-1">
+                共 <span className="text-accent-500 font-semibold">{beans.length}</span> 种咖啡豆
               </p>
+              <div className="mt-3 w-12 h-0.5 bg-accent-400/40 rounded-full" />
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -167,8 +168,8 @@ export function InventoryPage() {
             <h3 className="text-lg font-medium text-coffee-700 mb-2">
               {search ? '没有找到匹配的咖啡豆' : '还没有咖啡豆'}
             </h3>
-            <p className="text-sm text-coffee-500 mb-6">
-              {search ? '试试其他关键词' : '粘贴咖啡豆信息快速添加'}
+            <p className="text-sm text-coffee-500 mb-6 max-w-xs mx-auto leading-relaxed">
+              {search ? '试试其他关键词' : '你的咖啡角还空着。从第一包豆子开始，记录每一杯的香气。'}
             </p>
             {!search && (
               <div className="flex items-center justify-center gap-3">

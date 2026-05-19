@@ -19,10 +19,16 @@ export const BeanCard = memo(function BeanCard({ bean, onClick, className }: Bea
   const bestPeriod = parseBestPeriod(bean.notes)
   const freshness = getFreshnessStatus(roastDate, bestPeriod)
 
+  const roastBorderColor: Record<string, string> = {
+    light: 'border-l-amber-300',
+    medium: 'border-l-coffee-400',
+    dark: 'border-l-coffee-800',
+  }
+
   return (
     <Card
       hover
-      className={cn('p-5 animate-fade-in', className)}
+      className={cn('p-5 animate-fade-in border-l-4 rounded-l-none', roastBorderColor[bean.roastLevel] || 'border-l-coffee-400', className)}
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-3 mb-4">

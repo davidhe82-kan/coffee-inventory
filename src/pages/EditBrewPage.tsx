@@ -119,7 +119,7 @@ export function EditBrewPage() {
 
   return (
     <div className="min-h-screen pb-20">
-      <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-200 px-5 py-4">
+      <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-300/60 shadow-[0_2px_8px_rgba(62,39,35,0.05)] px-5 py-4">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-4">
             <button

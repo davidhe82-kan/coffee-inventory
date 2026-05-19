@@ -1,7 +1,7 @@
 import { memo } from 'react'
 import { cn } from '@/lib/utils'
 import type { FreshnessStatus } from '@/features/inventory/types'
-import { Flame } from 'lucide-react'
+import { Sparkles, Flame, Clock, AlertTriangle } from 'lucide-react'
 
 interface FreshnessBadgeProps {
   status: FreshnessStatus
@@ -18,11 +18,18 @@ export const FreshnessBadge = memo(function FreshnessBadge({ status, days, bestP
     expired: 'bg-red-100 text-red-800 border-red-200',
   }
 
-  const flameColors = {
+  const iconColors = {
     fresh: 'text-emerald-600',
     good: 'text-green-600',
     aging: 'text-orange-600',
     expired: 'text-red-600',
+  }
+
+  const icons: Record<FreshnessStatus, typeof Sparkles> = {
+    fresh: Sparkles,
+    good: Flame,
+    aging: Clock,
+    expired: AlertTriangle,
   }
 
   const labels: Record<FreshnessStatus, string> = {
@@ -32,6 +39,8 @@ export const FreshnessBadge = memo(function FreshnessBadge({ status, days, bestP
     expired: '已过期',
   }
 
+  const Icon = icons[status]
+
   return (
     <div
       className={cn(
@@ -40,7 +49,7 @@ export const FreshnessBadge = memo(function FreshnessBadge({ status, days, bestP
         className
       )}
     >
-      <Flame className={cn('w-4 h-4', flameColors[status])} />
+      <Icon className={cn('w-4 h-4', iconColors[status])} />
       <span>{labels[status]}</span>
       <span className="text-xs opacity-75">· {days}天</span>
     </div>

@@ -105,7 +105,7 @@ export function BeanDetailPage() {
 
   return (
     <div className="min-h-screen pb-24">
-      <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-200 px-5 py-4">
+      <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-300/60 shadow-[0_2px_8px_rgba(62,39,35,0.05)] px-5 py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 text-coffee-700 hover:text-coffee-900">
             <ArrowLeft className="w-5 h-5" />
@@ -128,7 +128,7 @@ export function BeanDetailPage() {
         <Card className="p-6 animate-fade-in">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-coffee-900">{bean.name}</h1>
+              <h1 className="text-2xl font-bold text-coffee-900 tracking-tight">{bean.name}</h1>
               <p className="text-coffee-600 mt-1">
                 {bean.origin || '未知产地'} · {bean.roaster || '未知烘焙商'}
               </p>
@@ -208,7 +208,7 @@ export function BeanDetailPage() {
                       <Star
                         key={i}
                         className={`w-3.5 h-3.5 ${
-                          i < record.rating ? 'fill-amber-400 text-amber-400' : 'text-coffee-200'
+                          i < record.rating ? 'fill-accent-400 text-accent-400' : 'text-coffee-200'
                         }`}
                       />
                     ))}

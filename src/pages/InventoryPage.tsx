@@ -121,18 +121,19 @@ export function InventoryPage() {
               value={sort}
               onChange={(e) => {
                 const newSort = e.target.value as SortOption
-                if (newSort === 'date') {
+                if (newSort === sort) {
                   setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
                 } else {
                   setSort(newSort)
+                  setSortDirection('desc')
                 }
               }}
               className="px-3 py-2 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-700 focus:outline-none focus:ring-2 focus:ring-coffee-500 cursor-pointer appearance-none pr-8 bg-[url('data:image/svg+xml;utf8,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 fill=%27none%27 viewBox=%270 0 24 24%27 stroke=%27%235d4037%27%3E%3Cpath stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%272%27 d=%27M19 9l-7 7-7-7%27/%3E%3C/svg%3E')] bg-[length:1rem] bg-[right_0.5rem_center] bg-no-repeat"
             >
               <option value="date">按烘焙日期 {sortDirection === 'desc' ? '↓' : '↑'}</option>
-              <option value="name">按名称</option>
-              <option value="quantity">按库存</option>
-              <option value="pricePerGram">按克单价</option>
+              <option value="name">按名称 {sort === 'name' ? (sortDirection === 'desc' ? '↓' : '↑') : ''}</option>
+              <option value="quantity">按库存 {sort === 'quantity' ? (sortDirection === 'desc' ? '↓' : '↑') : ''}</option>
+              <option value="pricePerGram">按克单价 {sort === 'pricePerGram' ? (sortDirection === 'desc' ? '↓' : '↑') : ''}</option>
             </select>
           </div>
         </div>

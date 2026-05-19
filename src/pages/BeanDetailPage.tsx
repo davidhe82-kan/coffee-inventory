@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Modal } from '@/components/ui/Modal'
+import { Tooltip } from '@/components/ui/Tooltip'
 import { FreshnessBadge } from '@/features/inventory/components/FreshnessBadge'
 import { QuantityBar } from '@/features/inventory/components/QuantityBar'
 import { TransactionList } from '@/features/inventory/components/TransactionList'
@@ -133,21 +134,27 @@ export function BeanDetailPage() {
             <span className="text-sm font-medium">返回</span>
           </Link>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={handleArchive}>
-              {bean.isArchived ? (
-                <RotateCw className="w-4 h-4 text-green-600" />
-              ) : (
-                <Archive className="w-4 h-4 text-coffee-600" />
-              )}
-            </Button>
-            <Link to={`/bean/${bean.id}/edit`}>
-              <Button variant="ghost" size="sm">
-                <Edit2 className="w-4 h-4" />
+            <Tooltip content={bean.isArchived ? '取消归档' : '归档'}>
+              <Button variant="ghost" size="sm" onClick={handleArchive}>
+                {bean.isArchived ? (
+                  <RotateCw className="w-4 h-4 text-green-600" />
+                ) : (
+                  <Archive className="w-4 h-4 text-coffee-600" />
+                )}
               </Button>
-            </Link>
-            <Button variant="ghost" size="sm" onClick={handleDelete}>
-              <Trash2 className="w-4 h-4 text-red-500" />
-            </Button>
+            </Tooltip>
+            <Tooltip content="编辑">
+              <Link to={`/bean/${bean.id}/edit`}>
+                <Button variant="ghost" size="sm">
+                  <Edit2 className="w-4 h-4" />
+                </Button>
+              </Link>
+            </Tooltip>
+            <Tooltip content="删除">
+              <Button variant="ghost" size="sm" onClick={handleDelete}>
+                <Trash2 className="w-4 h-4 text-red-500" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </header>

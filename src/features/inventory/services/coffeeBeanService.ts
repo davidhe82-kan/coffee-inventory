@@ -15,6 +15,10 @@ export const coffeeBeanService = {
         return localStorageService.getAllBeans()
       }
 
+      if (!data || data.length === 0) {
+        return localStorageService.getAllBeans()
+      }
+
       return data.map((row) => ({
         id: row.id,
         name: row.name,
@@ -152,6 +156,8 @@ export const coffeeBeanService = {
   },
 
   async updateQuantity(id: string, quantity: number): Promise<void> {
+    localStorageService.updateBeanQuantity(id, quantity)
+
     if (isSupabaseConfigured()) {
       const { error } = await supabase
         .from('coffee_beans')
@@ -164,8 +170,6 @@ export const coffeeBeanService = {
       if (error) {
         console.error('Supabase updateQuantity error:', error)
       }
-    } else {
-      localStorageService.updateBeanQuantity(id, quantity)
     }
   },
 

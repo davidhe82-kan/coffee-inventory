@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { Coffee, Plus, ThermometerSun, Scale, Filter, Star, Calendar } from 'lucide-react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Coffee, Plus, ThermometerSun, Scale, Filter, Star, Calendar, Trash2, ChevronRight } from 'lucide-react'
 import { brewService } from '@/features/brew/services/brewService'
 import type { BrewRecord } from '@/features/brew/types'
 import { Button } from '@/components/ui/Button'
@@ -8,6 +8,7 @@ import { BottomNav } from '@/components/ui/BottomNav'
 
 export function BrewPage() {
   const location = useLocation()
+  const navigate = useNavigate()
   const [records, setRecords] = useState<BrewRecord[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -20,6 +21,13 @@ export function BrewPage() {
     const data = await brewService.getAll()
     setRecords(data)
     setLoading(false)
+  }
+
+  const handleDelete = async (e: React.MouseEvent, record: BrewRecord) => {
+    e.stopPropagation()
+    if (!confirm('确定要删除这条手冲记录吗？')) return
+    await brewService.delete(record.id)
+    setRecords((prev) => prev.filter((r) => r.id !== record.id))
   }
 
   const formatDate = (date: Date) => {
@@ -74,25 +82,37 @@ export function BrewPage() {
             {records.map((record) => (
               <div
                 key={record.id}
-                className="bg-white rounded-xl border border-coffee-100 p-5 shadow-sm hover:shadow-md transition-shadow"
+                onClick={() => navigate(`/brew/${record.id}`)}
+                className="bg-white rounded-xl border border-coffee-100 p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer relative group"
               >
                 <div className="flex items-start justify-between mb-3">
-                  <div>
-                    <h3 className="font-semibold text-coffee-900 text-lg">{record.beanName}</h3>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-semibold text-coffee-900 text-lg truncate">{record.beanName}</h3>
+                      <ChevronRight className="w-5 h-5 text-coffee-300 flex-shrink-0" />
+                    </div>
                     <div className="flex items-center gap-2 text-sm text-coffee-500 mt-1">
                       <Calendar className="w-3.5 h-3.5" />
                       {formatDate(record.createdAt)}
                     </div>
                   </div>
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-5 h-5 ${
-                          i < record.rating ? 'fill-amber-400 text-amber-400' : 'text-coffee-200'
-                        }`}
-                      />
-                    ))}
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-4 h-4 ${
+                            i < record.rating ? 'fill-amber-400 text-amber-400' : 'text-coffee-200'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      onClick={(e) => handleDelete(e, record)}
+                      className="p-2 rounded-lg hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4 text-coffee-400 hover:text-red-500 transition-colors" />
+                    </button>
                   </div>
                 </div>
 
@@ -107,17 +127,17 @@ export function BrewPage() {
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Filter className="w-4 h-4 text-coffee-500" />
-                    <span className="text-coffee-700">{record.dripper}</span>
+                    <span className="text-coffee-700">{record.dripper || '-'}</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Coffee className="w-4 h-4 text-coffee-500" />
-                    <span className="text-coffee-700">{record.grinder}</span>
+                    <span className="text-coffee-700 truncate">{record.grinder || '-'}</span>
                   </div>
                 </div>
 
                 {record.notes && (
                   <div className="mt-3 pt-3 border-t border-coffee-100">
-                    <p className="text-sm text-coffee-600">{record.notes}</p>
+                    <p className="text-sm text-coffee-600 line-clamp-2">{record.notes}</p>
                   </div>
                 )}
               </div>

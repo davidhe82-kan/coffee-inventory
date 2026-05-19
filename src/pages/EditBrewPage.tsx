@@ -1,22 +1,25 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Coffee, Scale, ThermometerSun, Filter, Star, Save } from 'lucide-react'
 import { brewService } from '@/features/brew/services/brewService'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
-import { transactionService } from '@/features/inventory/services/transactionService'
 import type { NewBrewRecord } from '@/features/brew/types'
 import type { CoffeeBean } from '@/features/inventory/types'
 import { Button } from '@/components/ui/Button'
+import { BottomNav } from '@/components/ui/BottomNav'
 
 const GRINDERS = ['迈赫迪 E65S', '迈赫迪 EK43', 'Fellow Ode', 'Baratza Sette', 'Comandante', '其他']
 const DRIPPERS = ['V60', 'Kalita Wave', 'Chemex', 'Melitta', 'Hario Switch', '其他']
 const METHODS = ['手冲', '浸泡', '点滴', '冷萃', '冰滴', '其他']
 
-export function AddBrewPage() {
+export function EditBrewPage() {
+  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const [beans, setBeans] = useState<CoffeeBean[]>([])
   const [selectedBean, setSelectedBean] = useState<CoffeeBean | null>(null)
-  
+  const [loading, setLoading] = useState(true)
+
   const [form, setForm] = useState({
     beanWeight: 15,
     waterTemp: 92,
@@ -32,23 +35,38 @@ export function AddBrewPage() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    loadBeans()
-  }, [])
+    loadData()
+  }, [id])
 
-  const loadBeans = async () => {
-    const data = await coffeeBeanService.getAll()
-    setBeans(data)
-    if (data.length > 0) {
-      setSelectedBean(data[0])
+  const loadData = async () => {
+    if (!id) return
+    const beansData = await coffeeBeanService.getAll()
+    setBeans(beansData)
+
+    const record = await brewService.getById(id)
+    if (record) {
+      setForm({
+        beanWeight: record.beanWeight,
+        waterTemp: record.waterTemp,
+        grinder: record.grinder,
+        grindSetting: record.grindSetting,
+        method: record.method,
+        technique: record.technique,
+        dripper: record.dripper,
+        rating: record.rating,
+        notes: record.notes,
+      })
+      const bean = beansData.find((b) => b.id === record.beanId) || null
+      setSelectedBean(bean)
     }
+    setLoading(false)
   }
 
   const handleSubmit = async () => {
-    if (!selectedBean) return
-
+    if (!id || !selectedBean) return
     setSubmitting(true)
-    
-    const record: NewBrewRecord = {
+
+    const record: Partial<NewBrewRecord> = {
       beanId: selectedBean.id,
       beanName: selectedBean.name,
       beanWeight: form.beanWeight,
@@ -62,36 +80,32 @@ export function AddBrewPage() {
       notes: form.notes,
     }
 
-    await brewService.create(record)
+    await brewService.update(id, record)
+    navigate(`/brew/${id}`)
+  }
 
-    const newQuantity = Math.max(0, selectedBean.quantity - form.beanWeight)
-    await coffeeBeanService.updateQuantity(selectedBean.id, newQuantity)
-
-    await transactionService.create({
-      beanId: selectedBean.id,
-      type: 'consume',
-      amount: form.beanWeight,
-      timestamp: new Date(),
-      notes: `手冲：${selectedBean.name}`,
-    })
-
-    navigate('/brew')
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-coffee-300 border-t-coffee-600 rounded-full animate-spin" />
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-20">
       <header className="sticky top-0 z-10 bg-cream-100/95 backdrop-blur-sm border-b border-coffee-200 px-5 py-4">
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/brew')}
+              onClick={() => navigate(`/brew/${id}`)}
               className="p-2 -ml-2 rounded-lg hover:bg-coffee-100 transition-colors"
             >
               <ArrowLeft className="w-5 h-5 text-coffee-600" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-coffee-900">添加手冲记录</h1>
-              <p className="text-sm text-coffee-600">记录这次萃取的参数和感受</p>
+              <h1 className="text-xl font-bold text-coffee-900">编辑手冲记录</h1>
+              <p className="text-sm text-coffee-600">修改萃取参数和感受</p>
             </div>
           </div>
         </div>
@@ -125,7 +139,7 @@ export function AddBrewPage() {
             <Scale className="w-4 h-4" />
             萃取参数
           </h3>
-          
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">豆量 (g)</label>
@@ -138,7 +152,7 @@ export function AddBrewPage() {
                 max="50"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">
                 <ThermometerSun className="w-4 h-4 inline mr-1" />
@@ -161,7 +175,7 @@ export function AddBrewPage() {
             <Filter className="w-4 h-4" />
             器具设置
           </h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">磨豆机</label>
@@ -176,7 +190,7 @@ export function AddBrewPage() {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">研磨刻度</label>
               <input
@@ -187,7 +201,7 @@ export function AddBrewPage() {
                 className="w-full px-4 py-3 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">滤杯</label>
               <select
@@ -206,7 +220,7 @@ export function AddBrewPage() {
 
         <div className="bg-white rounded-xl border border-coffee-100 p-5">
           <h3 className="font-medium text-coffee-800 mb-4">冲煮方法</h3>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">冲煮方式</label>
@@ -221,7 +235,7 @@ export function AddBrewPage() {
                 ))}
               </select>
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">手法描述</label>
               <textarea
@@ -240,7 +254,7 @@ export function AddBrewPage() {
             <Star className="w-4 h-4" />
             评价
           </h3>
-          
+
           <div className="flex items-center gap-2 mb-4">
             {Array.from({ length: 5 }).map((_, i) => (
               <button
@@ -256,7 +270,7 @@ export function AddBrewPage() {
               </button>
             ))}
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-coffee-700 mb-2">感受与笔记</label>
             <textarea
@@ -270,15 +284,17 @@ export function AddBrewPage() {
         </div>
 
         <div className="flex gap-3">
-          <Button variant="ghost" onClick={() => navigate('/brew')} className="flex-1 border border-coffee-300">
+          <Button variant="ghost" onClick={() => navigate(`/brew/${id}`)} className="flex-1 border border-coffee-300">
             取消
           </Button>
           <Button onClick={handleSubmit} disabled={!selectedBean || submitting} className="flex-1">
             <Save className="w-4 h-4 mr-2" />
-            {submitting ? '保存中...' : '保存记录'}
+            {submitting ? '保存中...' : '保存修改'}
           </Button>
         </div>
       </main>
+
+      <BottomNav currentPath={location.pathname} />
     </div>
   )
 }

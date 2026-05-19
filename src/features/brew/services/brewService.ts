@@ -105,6 +105,39 @@ export const brewService = {
     return newRecord
   },
 
+  async update(id: string, record: Partial<NewBrewRecord>): Promise<void> {
+    if (isSupabaseConfigured()) {
+      const updateData: Record<string, unknown> = {}
+      if (record.beanId !== undefined) updateData.bean_id = record.beanId
+      if (record.beanName !== undefined) updateData.bean_name = record.beanName
+      if (record.beanWeight !== undefined) updateData.bean_weight = record.beanWeight
+      if (record.waterTemp !== undefined) updateData.water_temp = record.waterTemp
+      if (record.grinder !== undefined) updateData.grinder = record.grinder
+      if (record.grindSetting !== undefined) updateData.grind_setting = record.grindSetting
+      if (record.method !== undefined) updateData.method = record.method
+      if (record.technique !== undefined) updateData.technique = record.technique
+      if (record.dripper !== undefined) updateData.dripper = record.dripper
+      if (record.rating !== undefined) updateData.rating = record.rating
+      if (record.notes !== undefined) updateData.notes = record.notes
+
+      const { error } = await supabase
+        .from('brew_records')
+        .update(updateData)
+        .eq('id', id)
+
+      if (error) {
+        console.error('Supabase update error:', error)
+      }
+    }
+
+    const records = await this.getAll()
+    const index = records.findIndex((r) => r.id === id)
+    if (index !== -1) {
+      records[index] = { ...records[index], ...record }
+      localStorage.setItem('brew_records', JSON.stringify(records))
+    }
+  },
+
   async delete(id: string): Promise<void> {
     if (isSupabaseConfigured()) {
       await supabase.from('brew_records').delete().eq('id', id)

@@ -22,9 +22,9 @@ export function Tooltip({ content, children, className }: TooltipProps) {
     >
       {children}
       {show && (
-        <div className="absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-coffee-900 px-2 py-1 text-xs text-white shadow-lg z-50">
+        <div className="absolute top-full left-1/2 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-coffee-900 px-2 py-1 text-xs text-white shadow-lg z-50">
           {content}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-coffee-900" />
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 -mb-1 border-4 border-transparent border-b-coffee-900" />
         </div>
       )}
     </div>

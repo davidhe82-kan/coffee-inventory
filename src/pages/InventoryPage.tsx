@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Search, Plus, SortAsc, Coffee, Clipboard } from 'lucide-react'
 import { BeanCard } from '@/features/inventory/components/BeanCard'
 import { useCoffeeBeans } from '@/features/inventory/hooks/useCoffeeBeans'
 import { Button } from '@/components/ui/Button'
 import { QuickAddModal } from '@/components/ui/QuickAddModal'
+import { BottomNav } from '@/components/ui/BottomNav'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 
 type SortOption = 'date' | 'name' | 'quantity' | 'pricePerGram'
@@ -14,6 +15,7 @@ type SortValue = `${SortOption}_${SortDirection}`
 export function InventoryPage() {
   const { beans, loading, refresh } = useCoffeeBeans()
   const navigate = useNavigate()
+  const location = useLocation()
   const [search, setSearch] = useState('')
   const [sortValue, setSortValue] = useState<SortValue>('date_desc')
   const [adding, setAdding] = useState(false)
@@ -202,6 +204,8 @@ export function InventoryPage() {
         onClose={() => setShowQuickAdd(false)}
         onSuccess={handleQuickAddSuccess}
       />
+
+      <BottomNav currentPath={location.pathname} />
     </div>
   )
 }

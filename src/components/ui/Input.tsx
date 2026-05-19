@@ -18,7 +18,7 @@ export function Input({ className, label, error, id, icon, ...props }: InputProp
         'focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500',
         'transition-colors duration-200',
         error && 'border-red-500 focus:ring-red-500 focus:border-red-500',
-        icon && 'pl-10',
+        !!icon && 'pl-10',
         className
       )}
       {...props}

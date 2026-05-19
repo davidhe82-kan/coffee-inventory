@@ -34,17 +34,20 @@ export const BeanCard = memo(function BeanCard({ bean, onClick, className }: Bea
       <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-coffee-900 truncate">{bean.name}</h3>
-          <div className="flex items-center gap-3 mt-1 text-sm text-coffee-600">
+          <div className="flex items-center gap-2 mt-1.5 text-sm text-coffee-600 overflow-hidden">
             {bean.origin && (
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5" />
-                {bean.origin}
+              <span className="flex items-center gap-1 min-w-0 max-w-[110px]">
+                <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-coffee-400" />
+                <span className="truncate">{bean.origin}</span>
               </span>
             )}
+            {bean.origin && bean.roaster && (
+              <span className="text-coffee-300 text-xs flex-shrink-0">·</span>
+            )}
             {bean.roaster && (
-              <span className="flex items-center gap-1">
-                <Building2 className="w-3.5 h-3.5" />
-                {bean.roaster}
+              <span className="flex items-center gap-1 min-w-0 max-w-[110px]">
+                <Building2 className="w-3.5 h-3.5 flex-shrink-0 text-coffee-400" />
+                <span className="truncate">{bean.roaster}</span>
               </span>
             )}
           </div>

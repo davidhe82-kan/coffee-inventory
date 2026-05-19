@@ -52,7 +52,7 @@ export const transactionService = {
         beanId: row.bean_id,
         type: row.type as TransactionType,
         amount: row.amount || 0,
-        timestamp: new Date(row.timestamp),
+        timestamp: new Date(row.timestamp + 'Z'),
         notes: row.notes || '',
       }))
     }
@@ -94,7 +94,7 @@ export const transactionService = {
         beanId: result.bean_id,
         type: result.type as TransactionType,
         amount: result.amount,
-        timestamp: new Date(result.timestamp),
+        timestamp: new Date(result.timestamp + 'Z'),
         notes: result.notes || '',
       }
     }

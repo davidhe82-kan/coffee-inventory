@@ -25,13 +25,13 @@ export const coffeeBeanService = {
         origin: row.origin || '',
         roaster: row.roaster || '',
         roastLevel: row.roast_level || 'medium',
-        roastDate: new Date(row.roast_date),
+        roastDate: new Date(row.roast_date + 'Z'),
         quantity: row.quantity || 0,
         totalQuantity: row.total_quantity || 0,
         price: row.price || 0,
         notes: row.notes || '',
-        createdAt: new Date(row.created_at),
-        updatedAt: new Date(row.updated_at),
+        createdAt: new Date(row.created_at + 'Z'),
+        updatedAt: new Date(row.updated_at + 'Z'),
       }))
     }
 
@@ -57,13 +57,13 @@ export const coffeeBeanService = {
         origin: data.origin || '',
         roaster: data.roaster || '',
         roastLevel: data.roast_level || 'medium',
-        roastDate: new Date(data.roast_date),
+        roastDate: new Date(data.roast_date + 'Z'),
         quantity: data.quantity || 0,
         totalQuantity: data.total_quantity || 0,
         price: data.price || 0,
         notes: data.notes || '',
-        createdAt: new Date(data.created_at),
-        updatedAt: new Date(data.updated_at),
+        createdAt: new Date(data.created_at + 'Z'),
+        updatedAt: new Date(data.updated_at + 'Z'),
       }
     }
 

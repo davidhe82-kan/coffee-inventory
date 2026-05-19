@@ -27,7 +27,7 @@ export const brewService = {
         dripper: row.dripper,
         rating: row.rating,
         notes: row.notes,
-        createdAt: new Date(row.created_at + '+08:00'),
+        createdAt: new Date(row.created_at + 'Z'),
       }))
     }
 
@@ -65,7 +65,7 @@ export const brewService = {
         dripper: data.dripper,
         rating: data.rating,
         notes: data.notes,
-        createdAt: new Date(data.created_at + '+08:00'),
+        createdAt: new Date(data.created_at + 'Z'),
       }
     }
 

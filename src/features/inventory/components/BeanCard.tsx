@@ -31,29 +31,29 @@ export const BeanCard = memo(function BeanCard({ bean, onClick, className }: Bea
       className={cn('p-5 animate-fade-in border-l-4 rounded-l-none', roastBorderColor[bean.roastLevel] || 'border-l-coffee-400', className)}
       onClick={onClick}
     >
-      <div className="flex items-start justify-between gap-3 mb-4">
+      <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-coffee-900 truncate">{bean.name}</h3>
-          <div className="flex items-center gap-2 mt-1.5 text-sm text-coffee-600 overflow-hidden">
-            {bean.origin && (
-              <span className="flex items-center gap-1 min-w-0 max-w-[110px]">
-                <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-coffee-400" />
-                <span className="truncate">{bean.origin}</span>
-              </span>
-            )}
-            {bean.origin && bean.roaster && (
-              <span className="text-coffee-300 text-xs flex-shrink-0">·</span>
-            )}
-            {bean.roaster && (
-              <span className="flex items-center gap-1 min-w-0 max-w-[110px]">
-                <Building2 className="w-3.5 h-3.5 flex-shrink-0 text-coffee-400" />
-                <span className="truncate">{bean.roaster}</span>
-              </span>
-            )}
-          </div>
         </div>
         <FreshnessBadge status={freshness} days={days} bestPeriod={bestPeriod} />
       </div>
+
+      {(bean.origin || bean.roaster) && (
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1 mb-3 text-sm text-coffee-600">
+          {bean.origin && (
+            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.roaster && 'col-span-2')}>
+              <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-coffee-400" />
+              <span className="truncate">{bean.origin}</span>
+            </div>
+          )}
+          {bean.roaster && (
+            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.origin && 'col-span-2')}>
+              <Building2 className="w-3.5 h-3.5 flex-shrink-0 text-coffee-400" />
+              <span className="truncate">{bean.roaster}</span>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex items-center gap-2 mb-2">
         <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-coffee-100 text-coffee-700">

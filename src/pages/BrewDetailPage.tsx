@@ -39,6 +39,7 @@ export function BrewDetailPage() {
       weekday: 'long',
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: 'Asia/Shanghai',
     })
   }
 

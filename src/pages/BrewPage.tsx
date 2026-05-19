@@ -35,6 +35,7 @@ export function BrewPage() {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
+      timeZone: 'Asia/Shanghai',
     })
   }
 

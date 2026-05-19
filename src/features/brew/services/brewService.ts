@@ -27,12 +27,16 @@ export const brewService = {
         dripper: row.dripper,
         rating: row.rating,
         notes: row.notes,
-        createdAt: new Date(row.created_at),
+        createdAt: new Date(row.created_at + '+08:00'),
       }))
     }
 
     const stored = localStorage.getItem('brew_records')
-    return stored ? JSON.parse(stored) : []
+    if (!stored) return []
+    return JSON.parse(stored).map((row: BrewRecord) => ({
+      ...row,
+      createdAt: new Date(row.createdAt),
+    }))
   },
 
   async getById(id: string): Promise<BrewRecord | null> {
@@ -61,12 +65,18 @@ export const brewService = {
         dripper: data.dripper,
         rating: data.rating,
         notes: data.notes,
-        createdAt: new Date(data.created_at),
-      }
+        createdAt: new Date(data.created_at + '+08:00'),
+      }))
     }
 
     const records = await this.getAll()
-    return records.find((r) => r.id === id) || null
+    const stored = localStorage.getItem('brew_records')
+    if (!stored) return null
+    const parsed = JSON.parse(stored).map((row: BrewRecord) => ({
+      ...row,
+      createdAt: new Date(row.createdAt),
+    }))
+    return parsed.find((r: BrewRecord) => r.id === id) || null
   },
 
   async create(record: NewBrewRecord): Promise<BrewRecord> {

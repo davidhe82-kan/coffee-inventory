@@ -19,7 +19,7 @@ import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanServi
 export function BeanDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { beans, deleteBean, refresh } = useCoffeeBeans()
+  const { beans, loading: beansLoading, deleteBean, refresh } = useCoffeeBeans()
   const { transactions, addTransaction } = useTransactions(id)
   const [brewRecords, setBrewRecords] = useState<BrewRecord[]>([])
   const [showTxModal, setShowTxModal] = useState(false)
@@ -38,6 +38,17 @@ export function BeanDetailPage() {
     if (!id) return
     const all = await brewService.getAll()
     setBrewRecords(all.filter((r) => r.beanId === id))
+  }
+
+  if (beansLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-coffee-300 border-t-coffee-600 rounded-full animate-spin" />
+          <p className="text-sm text-coffee-500">加载中...</p>
+        </div>
+      </div>
+    )
   }
 
   if (!bean) {

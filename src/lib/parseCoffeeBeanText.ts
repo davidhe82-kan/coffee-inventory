@@ -45,6 +45,8 @@ export function parseCoffeeBeanText(text: string): ParseResult {
     name: '',
     origin: '',
     roaster: '',
+    beanVariety: '',
+    processingMethod: '',
     roastLevel: 'medium' as RoastLevel,
     roastDate: new Date(),
     quantity: 0,
@@ -83,6 +85,14 @@ export function parseCoffeeBeanText(text: string): ParseResult {
       case 'roaster':
         data.roaster = value
         break
+      case '豆种':
+      case 'variety':
+        data.beanVariety = value
+        break
+      case '处理法':
+      case 'process':
+        data.processingMethod = value
+        break
       case '烘焙程度':
       case 'roast':
         data.roastLevel = parseRoastLevel(value)
@@ -95,14 +105,6 @@ export function parseCoffeeBeanText(text: string): ParseResult {
       case '价格':
       case 'price':
         data.price = parseNumber(value)
-        break
-      case '豆种':
-      case 'variety':
-        notesFields.push(`豆种：${value}`)
-        break
-      case '处理法':
-      case 'process':
-        notesFields.push(`处理法：${value}`)
         break
       case '庄园':
       case '处理站':

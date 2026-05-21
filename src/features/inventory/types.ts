@@ -7,6 +7,8 @@ export interface CoffeeBean {
   name: string
   origin: string
   roaster: string
+  beanVariety: string
+  processingMethod: string
   roastLevel: RoastLevel
   roastDate: Date
   quantity: number
@@ -38,6 +40,8 @@ export interface CoffeeBeanFormData {
   name: string
   origin: string
   roaster: string
+  beanVariety: string
+  processingMethod: string
   roastLevel: RoastLevel
   roastDate: Date
   quantity: number

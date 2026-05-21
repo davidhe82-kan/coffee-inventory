@@ -40,6 +40,8 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
         name: preview.data.name!,
         origin: preview.data.origin || '',
         roaster: preview.data.roaster || '',
+        beanVariety: preview.data.beanVariety || '',
+        processingMethod: preview.data.processingMethod || '',
         roastLevel: preview.data.roastLevel || 'medium',
         roastDate: preview.data.roastDate || new Date(),
         quantity: preview.data.quantity || 0,
@@ -96,10 +98,13 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
             placeholder="品名：xxx
 净含量：xx克
 产地：xxx
+烘焙商：xxx
+豆种：xxx
+处理法：xxx
 烘焙程度：浅焙/中焙/深焙
 烘焙日期：2026-01-01
 价格：xx元"
-            rows={10}
+            rows={12}
             className="w-full px-4 py-3 rounded-lg border border-coffee-300 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500 transition-colors resize-none font-mono text-sm"
           />
         </div>
@@ -127,6 +132,24 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
               <div className="flex justify-between">
                 <span className="text-coffee-500">产地</span>
                 <span>{preview.data.origin}</span>
+              </div>
+            )}
+            {preview.data?.roaster && (
+              <div className="flex justify-between">
+                <span className="text-coffee-500">烘焙商</span>
+                <span>{preview.data.roaster}</span>
+              </div>
+            )}
+            {preview.data?.beanVariety && (
+              <div className="flex justify-between">
+                <span className="text-coffee-500">豆种</span>
+                <span>{preview.data.beanVariety}</span>
+              </div>
+            )}
+            {preview.data?.processingMethod && (
+              <div className="flex justify-between">
+                <span className="text-coffee-500">处理法</span>
+                <span>{preview.data.processingMethod}</span>
               </div>
             )}
             {preview.data?.quantity && preview.data.quantity > 0 && (

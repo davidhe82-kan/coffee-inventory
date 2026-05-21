@@ -24,6 +24,8 @@ export const coffeeBeanService = {
         name: row.name,
         origin: row.origin || '',
         roaster: row.roaster || '',
+        beanVariety: row.bean_variety || '',
+        processingMethod: row.processing_method || '',
         roastLevel: row.roast_level || 'medium',
         roastDate: new Date(row.roast_date + 'Z'),
         quantity: row.quantity || 0,
@@ -57,6 +59,8 @@ export const coffeeBeanService = {
         name: data.name,
         origin: data.origin || '',
         roaster: data.roaster || '',
+        beanVariety: data.bean_variety || '',
+        processingMethod: data.processing_method || '',
         roastLevel: data.roast_level || 'medium',
         roastDate: new Date(data.roast_date + 'Z'),
         quantity: data.quantity || 0,
@@ -79,6 +83,8 @@ export const coffeeBeanService = {
       name: data.name,
       origin: data.origin || '',
       roaster: data.roaster || '',
+      bean_variety: data.beanVariety || '',
+      processing_method: data.processingMethod || '',
       roast_level: data.roastLevel,
       roast_date: data.roastDate.toISOString(),
       quantity: data.quantity,
@@ -107,6 +113,8 @@ export const coffeeBeanService = {
         name: result.name,
         origin: result.origin || '',
         roaster: result.roaster || '',
+        beanVariety: result.bean_variety || '',
+        processingMethod: result.processing_method || '',
         roastLevel: result.roast_level,
         roastDate: new Date(result.roast_date),
         quantity: result.quantity,
@@ -123,6 +131,8 @@ export const coffeeBeanService = {
       name: data.name,
       origin: data.origin || '',
       roaster: data.roaster || '',
+      beanVariety: data.beanVariety || '',
+      processingMethod: data.processingMethod || '',
       roastLevel: data.roastLevel,
       roastDate: data.roastDate,
       quantity: data.quantity,
@@ -140,6 +150,8 @@ export const coffeeBeanService = {
     if (data.name !== undefined) updateData.name = data.name
     if (data.origin !== undefined) updateData.origin = data.origin
     if (data.roaster !== undefined) updateData.roaster = data.roaster
+    if (data.beanVariety !== undefined) updateData.bean_variety = data.beanVariety
+    if (data.processingMethod !== undefined) updateData.processing_method = data.processingMethod
     if (data.roastLevel !== undefined) updateData.roast_level = data.roastLevel
     if (data.quantity !== undefined) updateData.quantity = data.quantity
     if (data.totalQuantity !== undefined) updateData.total_quantity = data.totalQuantity
@@ -225,12 +237,14 @@ export const coffeeBeanService = {
       name: 'Laners 翼神传说',
       origin: '巴拿马',
       roaster: '',
+      beanVariety: '瑰夏',
+      processingMethod: '日晒',
       roastLevel: 'light',
       roastDate: new Date('2026-04-20'),
       quantity: 15,
       totalQuantity: 15,
       price: 87,
-      notes: '豆种：瑰夏 | 处理法：日晒 | 庄园/处理站：索菲亚 | 风味：荔枝花、血橙、荔枝 | 最佳饮用期：7天~90天',
+      notes: '庄园/处理站：索菲亚 | 风味：荔枝花、血橙、荔枝 | 最佳饮用期：7天~90天',
     })
   },
 }

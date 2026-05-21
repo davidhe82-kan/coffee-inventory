@@ -167,6 +167,13 @@ export function BeanDetailPage() {
               <p className="text-coffee-600 mt-1">
                 {bean.origin || '未知产地'} · {bean.roaster || '未知烘焙商'}
               </p>
+              {(bean.beanVariety || bean.processingMethod) && (
+                <p className="text-coffee-500 mt-1 text-sm">
+                  {bean.beanVariety}
+                  {bean.beanVariety && bean.processingMethod ? ' · ' : ''}
+                  {bean.processingMethod}
+                </p>
+              )}
             </div>
             <FreshnessBadge status={freshness} days={days} bestPeriod={bestPeriod} />
           </div>

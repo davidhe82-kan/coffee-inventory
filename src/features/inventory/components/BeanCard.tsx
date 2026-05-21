@@ -52,6 +52,23 @@ export const BeanCard = memo(function BeanCard({ bean, onClick, className }: Bea
         </div>
       )}
 
+      {(bean.beanVariety || bean.processingMethod) && (
+        <div className="grid grid-cols-2 gap-x-3 gap-y-1 mt-2 text-sm text-coffee-600">
+          {bean.beanVariety && (
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-coffee-400 text-xs">豆种</span>
+              <span className="truncate">{bean.beanVariety}</span>
+            </div>
+          )}
+          {bean.processingMethod && (
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="text-coffee-400 text-xs">处理</span>
+              <span className="truncate">{bean.processingMethod}</span>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="flex items-center gap-2 mt-3">
         <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-coffee-100 text-coffee-700">
           {getRoastLevelLabel(bean.roastLevel)}

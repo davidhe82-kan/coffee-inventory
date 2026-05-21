@@ -33,6 +33,8 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
     name: initialData?.name || '',
     origin: initialData?.origin || '',
     roaster: initialData?.roaster || '',
+    beanVariety: initialData?.beanVariety || '',
+    processingMethod: initialData?.processingMethod || '',
     roastLevel: initialData?.roastLevel || 'medium',
     roastDate: initialData?.roastDate || new Date(),
     quantity: initialData?.quantity || 0,
@@ -96,6 +98,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           onChange={(e) => handleChange('name', e.target.value)}
           placeholder="例如：耶加雪菲"
           required
+          className="md:col-span-2"
         />
 
         <Input
@@ -110,6 +113,20 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           value={formData.roaster}
           onChange={(e) => handleChange('roaster', e.target.value)}
           placeholder="例如：%ARABICA"
+        />
+
+        <Input
+          label="豆种"
+          value={formData.beanVariety}
+          onChange={(e) => handleChange('beanVariety', e.target.value)}
+          placeholder="例如：埃塞俄比亚原生种、卡杜拉、艺伎"
+        />
+
+        <Input
+          label="处理法"
+          value={formData.processingMethod}
+          onChange={(e) => handleChange('processingMethod', e.target.value)}
+          placeholder="例如：水洗、日晒、蜜处理、厌氧"
         />
 
         <Select
@@ -190,16 +207,12 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
       </div>
 
       <div className="flex gap-3 pt-4">
-        <Button type="submit" disabled={loading || !formData.name.trim() || (formData.bestDays || 90) <= (formData.restDays || 7)}>
+        <Button variant="ghost" onClick={() => navigate(isEdit ? `/bean/${beanId}` : '/')} className="flex-1 border border-coffee-300">
+          取消
+        </Button>
+        <Button onClick={handleSubmit} disabled={loading || !formData.name.trim() || (formData.bestDays || 90) <= (formData.restDays || 7)} className="flex-1">
           <Save className="w-4 h-4 mr-2" />
           {loading ? '保存中...' : '保存'}
-        </Button>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={() => navigate(isEdit ? `/bean/${beanId}` : '/')}
-        >
-          取消
         </Button>
       </div>
     </form>

@@ -71,6 +71,7 @@ export function AddBrewPage() {
       beanId: selectedBean.id,
       beanName: selectedBean.name,
       beanWeight: form.beanWeight,
+      brewType: 'pour-over',
       waterTemp: form.waterTemp,
       grinder: form.grinder,
       grindSetting: form.grindSetting,

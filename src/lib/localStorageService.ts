@@ -6,6 +6,7 @@ export interface LocalCoffeeBean {
   name: string
   origin: string
   roaster: string
+  farm: string
   beanVariety: string
   processingMethod: string
   roastLevel: 'light' | 'medium' | 'dark'
@@ -83,6 +84,7 @@ export const sampleBeanData = {
   name: 'Laners 翼神传说',
   origin: '巴拿马',
   roaster: '',
+  farm: '索菲亚',
   beanVariety: '瑰夏',
   processingMethod: '日晒',
   roastLevel: 'light' as const,
@@ -90,7 +92,7 @@ export const sampleBeanData = {
   quantity: 15,
   totalQuantity: 15,
   price: 87,
-  notes: '庄园/处理站：索菲亚 | 风味：荔枝花、血橙、荔枝 | 最佳饮用期：7天~90天',
+  notes: '风味：荔枝花、血橙、荔枝 | 最佳饮用期：7天~90天',
   isArchived: false,
 }
 

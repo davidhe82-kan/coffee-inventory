@@ -28,9 +28,10 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
   const [suggestions, setSuggestions] = useState<{
     origins: string[]
     roasters: string[]
+    farms: string[]
     beanVarieties: string[]
     processingMethods: string[]
-  }>({ origins: [], roasters: [], beanVarieties: [], processingMethods: [] })
+  }>({ origins: [], roasters: [], farms: [], beanVarieties: [], processingMethods: [] })
 
   const rawNotes = initialData?.notes || ''
   const period = parseBestPeriod(rawNotes)
@@ -40,6 +41,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
     name: initialData?.name || '',
     origin: initialData?.origin || '',
     roaster: initialData?.roaster || '',
+    farm: initialData?.farm || '',
     beanVariety: initialData?.beanVariety || '',
     processingMethod: initialData?.processingMethod || '',
     roastLevel: initialData?.roastLevel || 'medium',
@@ -57,9 +59,10 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
       const beans = await coffeeBeanService.getAll()
       const origins = [...new Set(beans.map((b) => b.origin).filter(Boolean))]
       const roasters = [...new Set(beans.map((b) => b.roaster).filter(Boolean))]
+      const farms = [...new Set(beans.map((b) => b.farm || '').filter(Boolean))]
       const beanVarieties = [...new Set(beans.map((b) => b.beanVariety).filter(Boolean))]
       const processingMethods = [...new Set(beans.map((b) => b.processingMethod).filter(Boolean))]
-      setSuggestions({ origins, roasters, beanVarieties, processingMethods })
+      setSuggestions({ origins, roasters, farms, beanVarieties, processingMethods })
     }
     loadSuggestions()
   }, [])
@@ -147,6 +150,21 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           />
           <datalist id="roaster-suggestions">
             {suggestions.roasters.map((v) => <option key={v} value={v} />)}
+          </datalist>
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-coffee-700 block mb-1.5">庄园/生产地点</label>
+          <input
+            type="text"
+            value={formData.farm}
+            onChange={(e) => handleChange('farm', e.target.value)}
+            placeholder="例如：索菲亚庄园"
+            list="farm-suggestions"
+            className="w-full px-4 py-2.5 rounded-lg border border-coffee-300 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500 transition-colors duration-200"
+          />
+          <datalist id="farm-suggestions">
+            {suggestions.farms.map((v) => <option key={v} value={v} />)}
           </datalist>
         </div>
 

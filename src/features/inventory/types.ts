@@ -7,6 +7,7 @@ export interface CoffeeBean {
   name: string
   origin: string
   roaster: string
+  farm?: string
   beanVariety: string
   processingMethod: string
   roastLevel: RoastLevel
@@ -40,6 +41,7 @@ export interface CoffeeBeanFormData {
   name: string
   origin: string
   roaster: string
+  farm: string
   beanVariety: string
   processingMethod: string
   roastLevel: RoastLevel

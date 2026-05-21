@@ -45,6 +45,7 @@ export function parseCoffeeBeanText(text: string): ParseResult {
     name: '',
     origin: '',
     roaster: '',
+    farm: '',
     beanVariety: '',
     processingMethod: '',
     roastLevel: 'medium' as RoastLevel,
@@ -109,7 +110,9 @@ export function parseCoffeeBeanText(text: string): ParseResult {
       case '庄园':
       case '处理站':
       case 'estate':
-        notesFields.push(`庄园/处理站：${value}`)
+      case 'farm':
+      case '生产地点':
+        data.farm = value
         break
       case '风味':
       case 'flavor':

@@ -166,6 +166,7 @@ export function BeanDetailPage() {
               <h1 className="text-2xl font-bold text-coffee-900 tracking-tight">{bean.name}</h1>
               <p className="text-coffee-600 mt-1">
                 {bean.origin || '未知产地'} · {bean.roaster || '未知烘焙商'}
+                {bean.farm ? ` · ${bean.farm}` : ''}
               </p>
               {(bean.beanVariety || bean.processingMethod) && (
                 <p className="text-coffee-500 mt-1 text-sm">

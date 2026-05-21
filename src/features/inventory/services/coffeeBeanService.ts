@@ -12,11 +12,19 @@ export const coffeeBeanService = {
 
       if (error) {
         console.error('Supabase error:', error)
-        return localStorageService.getAllBeans()
+        // 确保所有 bean 都有 farm 字段，保持向后兼容
+        return localStorageService.getAllBeans().map((bean) => ({
+          ...bean,
+          farm: bean.farm || '',
+        })) as CoffeeBean[]
       }
 
       if (!data || data.length === 0) {
-        return localStorageService.getAllBeans()
+        // 确保所有 bean 都有 farm 字段，保持向后兼容
+        return localStorageService.getAllBeans().map((bean) => ({
+          ...bean,
+          farm: bean.farm || '',
+        })) as CoffeeBean[]
       }
 
       return data.map((row) => ({
@@ -24,6 +32,7 @@ export const coffeeBeanService = {
         name: row.name,
         origin: row.origin || '',
         roaster: row.roaster || '',
+        farm: row.farm || '',
         beanVariety: row.bean_variety || '',
         processingMethod: row.processing_method || '',
         roastLevel: row.roast_level || 'medium',
@@ -74,7 +83,10 @@ export const coffeeBeanService = {
     }
 
     const beans = localStorageService.getAllBeans()
-    return beans.find((b) => b.id === id) || null
+    const bean = beans.find((b) => b.id === id)
+    if (!bean) return null
+    // 确保有 farm 字段，保持向后兼容
+    return { ...bean, farm: bean.farm || '' } as CoffeeBean
   },
 
   async create(data: CoffeeBeanFormData): Promise<CoffeeBean> {
@@ -83,6 +95,7 @@ export const coffeeBeanService = {
       name: data.name,
       origin: data.origin || '',
       roaster: data.roaster || '',
+      farm: data.farm || '',
       bean_variety: data.beanVariety || '',
       processing_method: data.processingMethod || '',
       roast_level: data.roastLevel,
@@ -113,6 +126,7 @@ export const coffeeBeanService = {
         name: result.name,
         origin: result.origin || '',
         roaster: result.roaster || '',
+        farm: result.farm || '',
         beanVariety: result.bean_variety || '',
         processingMethod: result.processing_method || '',
         roastLevel: result.roast_level,
@@ -131,6 +145,7 @@ export const coffeeBeanService = {
       name: data.name,
       origin: data.origin || '',
       roaster: data.roaster || '',
+      farm: data.farm || '',
       beanVariety: data.beanVariety || '',
       processingMethod: data.processingMethod || '',
       roastLevel: data.roastLevel,
@@ -150,6 +165,7 @@ export const coffeeBeanService = {
     if (data.name !== undefined) updateData.name = data.name
     if (data.origin !== undefined) updateData.origin = data.origin
     if (data.roaster !== undefined) updateData.roaster = data.roaster
+    if (data.farm !== undefined) updateData.farm = data.farm
     if (data.beanVariety !== undefined) updateData.bean_variety = data.beanVariety
     if (data.processingMethod !== undefined) updateData.processing_method = data.processingMethod
     if (data.roastLevel !== undefined) updateData.roast_level = data.roastLevel
@@ -237,6 +253,7 @@ export const coffeeBeanService = {
       name: 'Laners 翼神传说',
       origin: '巴拿马',
       roaster: '',
+      farm: '索菲亚',
       beanVariety: '瑰夏',
       processingMethod: '日晒',
       roastLevel: 'light',
@@ -244,7 +261,7 @@ export const coffeeBeanService = {
       quantity: 15,
       totalQuantity: 15,
       price: 87,
-      notes: '庄园/处理站：索菲亚 | 风味：荔枝花、血橙、荔枝 | 最佳饮用期：7天~90天',
+      notes: '风味：荔枝花、血橙、荔枝 | 最佳饮用期：7天~90天',
     })
   },
 }

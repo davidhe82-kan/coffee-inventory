@@ -38,13 +38,13 @@ export const BeanCard = memo(function BeanCard({ bean, onClick, className }: Bea
       {(bean.origin || bean.roaster) && (
         <div className="grid grid-cols-2 gap-x-3 gap-y-1 mt-3 text-sm text-coffee-600">
           {bean.origin && (
-            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.roaster && 'col-span-2')}>
+            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.roaster ? 'col-span-2' : '')}>
               <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-coffee-400" />
               <span className="truncate">{bean.origin}</span>
             </div>
           )}
           {bean.roaster && (
-            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.origin && 'col-span-2')}>
+            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.origin ? 'col-span-2' : '')}>
               <Building2 className="w-3.5 h-3.5 flex-shrink-0 text-coffee-400" />
               <span className="truncate">{bean.roaster}</span>
             </div>
@@ -52,16 +52,22 @@ export const BeanCard = memo(function BeanCard({ bean, onClick, className }: Bea
         </div>
       )}
 
-      {(bean.beanVariety || bean.processingMethod) && (
+      {(bean.farm || bean.beanVariety || bean.processingMethod) && (
         <div className="grid grid-cols-2 gap-x-3 gap-y-1 mt-2 text-sm text-coffee-600">
+          {bean.farm && (
+            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.beanVariety && !bean.processingMethod ? 'col-span-2' : '')}>
+              <span className="text-coffee-400 text-xs">庄园</span>
+              <span className="truncate">{bean.farm}</span>
+            </div>
+          )}
           {bean.beanVariety && (
-            <div className="flex items-center gap-1.5 min-w-0">
+            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.farm && !bean.processingMethod ? 'col-span-2' : '')}>
               <span className="text-coffee-400 text-xs">豆种</span>
               <span className="truncate">{bean.beanVariety}</span>
             </div>
           )}
           {bean.processingMethod && (
-            <div className="flex items-center gap-1.5 min-w-0">
+            <div className={cn('flex items-center gap-1.5 min-w-0', !bean.farm && !bean.beanVariety ? 'col-span-2' : 'col-span-2')}>
               <span className="text-coffee-400 text-xs">处理</span>
               <span className="truncate">{bean.processingMethod}</span>
             </div>

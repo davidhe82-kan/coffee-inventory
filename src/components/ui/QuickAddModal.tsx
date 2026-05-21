@@ -40,6 +40,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
         name: preview.data.name!,
         origin: preview.data.origin || '',
         roaster: preview.data.roaster || '',
+        farm: preview.data.farm || '',
         beanVariety: preview.data.beanVariety || '',
         processingMethod: preview.data.processingMethod || '',
         roastLevel: preview.data.roastLevel || 'medium',
@@ -99,6 +100,7 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
 净含量：xx克
 产地：xxx
 烘焙商：xxx
+庄园：xxx
 豆种：xxx
 处理法：xxx
 烘焙程度：浅焙/中焙/深焙
@@ -138,6 +140,12 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
               <div className="flex justify-between">
                 <span className="text-coffee-500">烘焙商</span>
                 <span>{preview.data.roaster}</span>
+              </div>
+            )}
+            {preview.data?.farm && (
+              <div className="flex justify-between">
+                <span className="text-coffee-500">庄园</span>
+                <span>{preview.data.farm}</span>
               </div>
             )}
             {preview.data?.beanVariety && (

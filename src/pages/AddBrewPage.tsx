@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/Button'
 import { BeanPickerSheet } from '@/components/ui/BeanPickerSheet'
 import { parseBestPeriod, getFreshnessStatus, getFreshnessLabel } from '@/lib/utils'
 
-const GRINDER_SUGGESTIONS = ['迈赫迪 E65S', '迈赫迪 EK43', 'Fellow Ode', 'Baratza Sette', 'Comandante']
-const DRIPPER_SUGGESTIONS = ['V60', 'Kalita Wave', 'Chemex', 'Melitta', 'Hario Switch']
+const DEFAULT_GRINDERS = ['迈赫迪 E65S', '迈赫迪 EK43', 'Fellow Ode', 'Baratza Sette', 'Comandante']
+const DEFAULT_DRIPPERS = ['V60', 'Kalita Wave', 'Chemex', 'Melitta', 'Hario Switch']
 const METHODS = ['手冲', '浸泡', '点滴', '冷萃', '冰滴', '其他']
 
 export function AddBrewPage() {
@@ -18,6 +18,8 @@ export function AddBrewPage() {
   const [beans, setBeans] = useState<CoffeeBean[]>([])
   const [selectedBean, setSelectedBean] = useState<CoffeeBean | null>(null)
   const [showBeanSheet, setShowBeanSheet] = useState(false)
+  const [grinderSuggestions, setGrinderSuggestions] = useState<string[]>(DEFAULT_GRINDERS)
+  const [dripperSuggestions, setDripperSuggestions] = useState<string[]>(DEFAULT_DRIPPERS)
 
   const [form, setForm] = useState({
     beanWeight: 15,
@@ -34,15 +36,30 @@ export function AddBrewPage() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    loadBeans()
+    loadData()
   }, [])
 
-  const loadBeans = async () => {
-    const data = await coffeeBeanService.getAll()
-    setBeans(data)
-    if (data.length > 0 && !selectedBean) {
-      setSelectedBean(data[0])
+  const loadData = async () => {
+    const [beansData, records] = await Promise.all([
+      coffeeBeanService.getAll(),
+      brewService.getAll(),
+    ])
+    setBeans(beansData)
+    if (beansData.length > 0 && !selectedBean) {
+      setSelectedBean(beansData[0])
     }
+
+    // 从历史记录里收集磨豆机和滤杯
+    const grinders = new Set<string>(DEFAULT_GRINDERS)
+    const drippers = new Set<string>(DEFAULT_DRIPPERS)
+
+    records.forEach((r) => {
+      if (r.grinder) grinders.add(r.grinder)
+      if (r.dripper) drippers.add(r.dripper)
+    })
+
+    setGrinderSuggestions(Array.from(grinders))
+    setDripperSuggestions(Array.from(drippers))
   }
 
   const handleSubmit = async () => {
@@ -204,7 +221,7 @@ export function AddBrewPage() {
                 className="w-full px-4 py-3 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500"
               />
               <datalist id="grinder-suggestions">
-                {GRINDER_SUGGESTIONS.map((g) => <option key={g} value={g} />)}
+                {grinderSuggestions.map((g) => <option key={g} value={g} />)}
               </datalist>
             </div>
 
@@ -230,7 +247,7 @@ export function AddBrewPage() {
                 className="w-full px-4 py-3 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500"
               />
               <datalist id="dripper-suggestions">
-                {DRIPPER_SUGGESTIONS.map((d) => <option key={d} value={d} />)}
+                {dripperSuggestions.map((d) => <option key={d} value={d} />)}
               </datalist>
             </div>
           </div>

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Coffee, Scale, ThermometerSun, Filter, Star, Save } from 'lucide-react'
+import { ArrowLeft, Coffee, Scale, ThermometerSun, Filter, Star, Save, ChevronRight } from 'lucide-react'
 import { brewService } from '@/features/brew/services/brewService'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 import type { NewBrewRecord } from '@/features/brew/types'
 import type { CoffeeBean } from '@/features/inventory/types'
 import { Button } from '@/components/ui/Button'
 import { BottomNav } from '@/components/ui/BottomNav'
+import { BeanPickerSheet } from '@/components/ui/BeanPickerSheet'
+import { parseBestPeriod, getFreshnessStatus, getFreshnessLabel } from '@/lib/utils'
 
 const GRINDERS = ['迈赫迪 E65S', '迈赫迪 EK43', 'Fellow Ode', 'Baratza Sette', 'Comandante', '其他']
 const DRIPPERS = ['V60', 'Kalita Wave', 'Chemex', 'Melitta', 'Hario Switch', '其他']
@@ -18,6 +20,7 @@ export function EditBrewPage() {
   const location = useLocation()
   const [beans, setBeans] = useState<CoffeeBean[]>([])
   const [selectedBean, setSelectedBean] = useState<CoffeeBean | null>(null)
+  const [showBeanSheet, setShowBeanSheet] = useState(false)
   const [loading, setLoading] = useState(true)
 
   const [form, setForm] = useState({
@@ -109,6 +112,56 @@ export function EditBrewPage() {
     navigate(`/brew/${id}`)
   }
 
+  const renderSelectedBean = () => {
+    if (!selectedBean) {
+      return (
+        <button
+          onClick={() => setShowBeanSheet(true)}
+          className="w-full flex items-center gap-3 px-4 py-4 rounded-lg border-2 border-dashed border-coffee-300 text-coffee-500 hover:border-coffee-500 hover:text-coffee-700 transition-colors"
+        >
+          <Coffee className="w-5 h-5" />
+          <span>点击选择咖啡豆</span>
+        </button>
+      )
+    }
+
+    const bestPeriod = parseBestPeriod(selectedBean.notes)
+    const freshness = getFreshnessStatus(selectedBean.roastDate, bestPeriod)
+    const freshnessLabel = getFreshnessLabel(freshness)
+
+    return (
+      <button
+        onClick={() => setShowBeanSheet(true)}
+        className="w-full text-left p-4 rounded-lg border border-coffee-200 bg-white hover:border-coffee-400 hover:bg-cream-50 transition-colors"
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="font-medium text-coffee-900">{selectedBean.name}</div>
+            <div className="text-sm text-coffee-500 mt-0.5">
+              {selectedBean.origin || '未知产地'} · {selectedBean.quantity}g
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-xs font-medium px-2 py-1 rounded-full ${
+                freshness === 'good'
+                  ? 'bg-green-100 text-green-700'
+                  : freshness === 'resting'
+                  ? 'bg-teal-100 text-teal-700'
+                  : freshness === 'aging'
+                  ? 'bg-amber-100 text-amber-700'
+                  : 'bg-red-100 text-red-600'
+              }`}
+            >
+              {freshnessLabel}
+            </span>
+            <ChevronRight className="w-4 h-4 text-coffee-400" />
+          </div>
+        </div>
+      </button>
+    )
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -142,21 +195,7 @@ export function EditBrewPage() {
             <Coffee className="w-4 h-4" />
             咖啡豆
           </h3>
-          <select
-            value={selectedBean?.id || ''}
-            onChange={(e) => {
-              const bean = beans.find((b) => b.id === e.target.value)
-              setSelectedBean(bean || null)
-            }}
-            className="w-full px-4 py-3 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500"
-          >
-            <option value="">选择咖啡豆</option>
-            {beans.map((bean) => (
-              <option key={bean.id} value={bean.id}>
-                {bean.name} ({bean.origin})
-              </option>
-            ))}
-          </select>
+          {renderSelectedBean()}
         </div>
 
         <div className="bg-white rounded-xl border border-coffee-100 p-5">
@@ -318,6 +357,14 @@ export function EditBrewPage() {
           </Button>
         </div>
       </main>
+
+      <BeanPickerSheet
+        isOpen={showBeanSheet}
+        onClose={() => setShowBeanSheet(false)}
+        beans={beans}
+        selectedBeanId={selectedBean?.id}
+        onSelect={(bean) => setSelectedBean(bean)}
+      />
 
       <BottomNav currentPath={location.pathname} />
     </div>

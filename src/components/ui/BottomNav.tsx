@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Coffee, Bean, Zap } from 'lucide-react'
+import { Coffee, Bean, Droplet } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface BottomNavProps {
@@ -44,7 +44,7 @@ export function BottomNav({ currentPath }: BottomNavProps) {
           )}
         >
           {isEspresso && <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-coffee-600 rounded-full" />}
-          <Zap className="w-6 h-6" />
+          <Droplet className="w-6 h-6" />
           <span className="text-xs font-medium">意式记录</span>
         </Link>
       </div>

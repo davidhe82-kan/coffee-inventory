@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
-import { ArrowLeft, Edit2, Trash2, Coffee, Scale, Star, RotateCcw, Timer, Zap } from 'lucide-react'
+import { ArrowLeft, Edit2, Trash2, Coffee, Scale, Star, RotateCcw, Timer, Droplet } from 'lucide-react'
 import { brewService } from '@/features/brew/services/brewService'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 import type { BrewRecord } from '@/features/brew/types'
@@ -114,7 +114,7 @@ export function EspressoDetailPage() {
 
         <div className="bg-white rounded-xl border border-coffee-100 p-6">
           <h2 className="text-lg font-semibold text-coffee-800 mb-4 flex items-center gap-2">
-            <Zap className="w-5 h-5" />
+            <Droplet className="w-5 h-5" />
             萃取参数
           </h2>
 
@@ -150,7 +150,7 @@ export function EspressoDetailPage() {
             {record.pressure && (
               <div className="bg-cream-50 rounded-lg p-4">
                 <div className="flex items-center gap-2 text-coffee-500 mb-1">
-                  <Zap className="w-4 h-4" />
+                  <Droplet className="w-4 h-4" />
                   <span className="text-xs">压力</span>
                 </div>
                 <p className="text-xl font-semibold text-coffee-900">{record.pressure}<span className="text-sm font-normal text-coffee-500"> bar</span></p>
@@ -160,7 +160,7 @@ export function EspressoDetailPage() {
             {record.temperature && (
               <div className="bg-cream-50 rounded-lg p-4">
                 <div className="flex items-center gap-2 text-coffee-500 mb-1">
-                  <Zap className="w-4 h-4" />
+                  <Droplet className="w-4 h-4" />
                   <span className="text-xs">水温</span>
                 </div>
                 <p className="text-xl font-semibold text-coffee-900">{record.temperature}<span className="text-sm font-normal text-coffee-500"> °C</span></p>

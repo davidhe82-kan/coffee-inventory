@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
-import { ArrowLeft, Coffee, Star, Save, ChevronRight, Timer, Zap } from 'lucide-react'
+import { ArrowLeft, Coffee, Star, Save, ChevronRight, Timer, Droplet } from 'lucide-react'
 import { brewService } from '@/features/brew/services/brewService'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
 import type { NewBrewRecord } from '@/features/brew/types'
@@ -225,7 +225,7 @@ export function EditEspressoPage() {
 
         <div className="bg-white rounded-xl border border-coffee-100 p-5">
           <h3 className="font-medium text-coffee-800 mb-4 flex items-center gap-2">
-            <Zap className="w-4 h-4" />
+            <Droplet className="w-4 h-4" />
             萃取参数
           </h3>
 

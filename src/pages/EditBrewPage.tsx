@@ -10,8 +10,8 @@ import { BottomNav } from '@/components/ui/BottomNav'
 import { BeanPickerSheet } from '@/components/ui/BeanPickerSheet'
 import { parseBestPeriod, getFreshnessStatus, getFreshnessLabel } from '@/lib/utils'
 
-const GRINDERS = ['迈赫迪 E65S', '迈赫迪 EK43', 'Fellow Ode', 'Baratza Sette', 'Comandante', '其他']
-const DRIPPERS = ['V60', 'Kalita Wave', 'Chemex', 'Melitta', 'Hario Switch', '其他']
+const GRINDER_SUGGESTIONS = ['迈赫迪 E65S', '迈赫迪 EK43', 'Fellow Ode', 'Baratza Sette', 'Comandante']
+const DRIPPER_SUGGESTIONS = ['V60', 'Kalita Wave', 'Chemex', 'Melitta', 'Hario Switch']
 const METHODS = ['手冲', '浸泡', '点滴', '冷萃', '冰滴', '其他']
 
 export function EditBrewPage() {
@@ -243,16 +243,17 @@ export function EditBrewPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">磨豆机</label>
-              <select
+              <input
+                type="text"
                 value={form.grinder}
                 onChange={(e) => setForm({ ...form, grinder: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500"
-              >
-                <option value="">选择磨豆机</option>
-                {GRINDERS.map((g) => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
+                placeholder="输入或选择磨豆机"
+                list="grinder-suggestions"
+                className="w-full px-4 py-3 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500"
+              />
+              <datalist id="grinder-suggestions">
+                {GRINDER_SUGGESTIONS.map((g) => <option key={g} value={g} />)}
+              </datalist>
             </div>
 
             <div>
@@ -268,16 +269,17 @@ export function EditBrewPage() {
 
             <div>
               <label className="block text-sm font-medium text-coffee-700 mb-2">滤杯</label>
-              <select
+              <input
+                type="text"
                 value={form.dripper}
                 onChange={(e) => setForm({ ...form, dripper: e.target.value })}
-                className="w-full px-4 py-3 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500"
-              >
-                <option value="">选择滤杯</option>
-                {DRIPPERS.map((d) => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
+                placeholder="输入或选择滤杯"
+                list="dripper-suggestions"
+                className="w-full px-4 py-3 rounded-lg border border-coffee-200 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500"
+              />
+              <datalist id="dripper-suggestions">
+                {DRIPPER_SUGGESTIONS.map((d) => <option key={d} value={d} />)}
+              </datalist>
             </div>
           </div>
         </div>

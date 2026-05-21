@@ -1,9 +1,10 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 import { useCoffeeBeans } from '../hooks/useCoffeeBeans'
+import { coffeeBeanService } from '../services/coffeeBeanService'
 import type { CoffeeBeanFormData, RoastLevel } from '../types'
 import { parseBestPeriod, formatBestPeriod } from '@/lib/utils'
 import { ArrowLeft, Save } from 'lucide-react'
@@ -24,6 +25,12 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
   const navigate = useNavigate()
   const { addBean, updateBean } = useCoffeeBeans()
   const [loading, setLoading] = useState(false)
+  const [suggestions, setSuggestions] = useState<{
+    origins: string[]
+    roasters: string[]
+    beanVarieties: string[]
+    processingMethods: string[]
+  }>({ origins: [], roasters: [], beanVarieties: [], processingMethods: [] })
 
   const rawNotes = initialData?.notes || ''
   const period = parseBestPeriod(rawNotes)
@@ -44,6 +51,18 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
     restDays: initialData?.restDays || period.restDays,
     bestDays: initialData?.bestDays || period.bestDays,
   })
+
+  useEffect(() => {
+    const loadSuggestions = async () => {
+      const beans = await coffeeBeanService.getAll()
+      const origins = [...new Set(beans.map((b) => b.origin).filter(Boolean))]
+      const roasters = [...new Set(beans.map((b) => b.roaster).filter(Boolean))]
+      const beanVarieties = [...new Set(beans.map((b) => b.beanVariety).filter(Boolean))]
+      const processingMethods = [...new Set(beans.map((b) => b.processingMethod).filter(Boolean))]
+      setSuggestions({ origins, roasters, beanVarieties, processingMethods })
+    }
+    loadSuggestions()
+  }, [])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -101,33 +120,65 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           className="md:col-span-2"
         />
 
-        <Input
-          label="产地"
-          value={formData.origin}
-          onChange={(e) => handleChange('origin', e.target.value)}
-          placeholder="例如：埃塞俄比亚"
-        />
+        <div>
+          <label className="text-sm font-medium text-coffee-700 block mb-1.5">产地</label>
+          <input
+            type="text"
+            value={formData.origin}
+            onChange={(e) => handleChange('origin', e.target.value)}
+            placeholder="例如：埃塞俄比亚"
+            list="origin-suggestions"
+            className="w-full px-4 py-2.5 rounded-lg border border-coffee-300 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500 transition-colors duration-200"
+          />
+          <datalist id="origin-suggestions">
+            {suggestions.origins.map((v) => <option key={v} value={v} />)}
+          </datalist>
+        </div>
 
-        <Input
-          label="烘焙商"
-          value={formData.roaster}
-          onChange={(e) => handleChange('roaster', e.target.value)}
-          placeholder="例如：%ARABICA"
-        />
+        <div>
+          <label className="text-sm font-medium text-coffee-700 block mb-1.5">烘焙商</label>
+          <input
+            type="text"
+            value={formData.roaster}
+            onChange={(e) => handleChange('roaster', e.target.value)}
+            placeholder="例如：%ARABICA"
+            list="roaster-suggestions"
+            className="w-full px-4 py-2.5 rounded-lg border border-coffee-300 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500 transition-colors duration-200"
+          />
+          <datalist id="roaster-suggestions">
+            {suggestions.roasters.map((v) => <option key={v} value={v} />)}
+          </datalist>
+        </div>
 
-        <Input
-          label="豆种"
-          value={formData.beanVariety}
-          onChange={(e) => handleChange('beanVariety', e.target.value)}
-          placeholder="例如：埃塞俄比亚原生种、卡杜拉、艺伎"
-        />
+        <div>
+          <label className="text-sm font-medium text-coffee-700 block mb-1.5">豆种</label>
+          <input
+            type="text"
+            value={formData.beanVariety}
+            onChange={(e) => handleChange('beanVariety', e.target.value)}
+            placeholder="例如：埃塞俄比亚原生种、卡杜拉、艺伎"
+            list="bean-variety-suggestions"
+            className="w-full px-4 py-2.5 rounded-lg border border-coffee-300 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500 transition-colors duration-200"
+          />
+          <datalist id="bean-variety-suggestions">
+            {suggestions.beanVarieties.map((v) => <option key={v} value={v} />)}
+          </datalist>
+        </div>
 
-        <Input
-          label="处理法"
-          value={formData.processingMethod}
-          onChange={(e) => handleChange('processingMethod', e.target.value)}
-          placeholder="例如：水洗、日晒、蜜处理、厌氧"
-        />
+        <div>
+          <label className="text-sm font-medium text-coffee-700 block mb-1.5">处理法</label>
+          <input
+            type="text"
+            value={formData.processingMethod}
+            onChange={(e) => handleChange('processingMethod', e.target.value)}
+            placeholder="例如：水洗、日晒、蜜处理、厌氧"
+            list="processing-method-suggestions"
+            className="w-full px-4 py-2.5 rounded-lg border border-coffee-300 bg-cream-50 text-coffee-900 placeholder:text-coffee-400 focus:outline-none focus:ring-2 focus:ring-coffee-500 focus:border-coffee-500 transition-colors duration-200"
+          />
+          <datalist id="processing-method-suggestions">
+            {suggestions.processingMethods.map((v) => <option key={v} value={v} />)}
+          </datalist>
+        </div>
 
         <Select
           label="烘焙程度"

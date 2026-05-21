@@ -42,8 +42,8 @@ export function QuickAddModal({ isOpen, onClose, onSuccess }: QuickAddModalProps
         roaster: preview.data.roaster || '',
         roastLevel: preview.data.roastLevel || 'medium',
         roastDate: preview.data.roastDate || new Date(),
-        quantity: preview.data.quantity || 227,
-        totalQuantity: preview.data.totalQuantity || 227,
+        quantity: preview.data.quantity || 0,
+        totalQuantity: preview.data.totalQuantity || 0,
         price: preview.data.price || 0,
         notes: preview.data.notes || '',
       })

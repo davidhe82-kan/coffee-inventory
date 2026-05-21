@@ -128,8 +128,8 @@ export function parseCoffeeBeanText(text: string): ParseResult {
   }
 
   if (data.totalQuantity === 0) {
-    data.quantity = 227
-    data.totalQuantity = 227
+    data.quantity = 0
+    data.totalQuantity = 0
   }
 
   if (!data.roastDate || isNaN(data.roastDate.getTime())) {

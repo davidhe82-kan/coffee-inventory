@@ -222,6 +222,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
             type="number"
             value={formData.quantity}
             onChange={(e) => handleChange('quantity', Number(e.target.value))}
+            onFocus={(e) => e.target.select()}
             min={0}
           />
           <Input
@@ -236,6 +237,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
                 ...(!isEdit ? { quantity: v } : {}),
               }))
             }}
+            onFocus={(e) => e.target.select()}
             min={0}
           />
         </div>

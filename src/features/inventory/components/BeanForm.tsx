@@ -28,6 +28,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
   const [loading, setLoading] = useState(false)
   const [dirty, setDirty] = useState(false)
   const [showUnsavedModal, setShowUnsavedModal] = useState(false)
+  const [focusedField, setFocusedField] = useState<string | null>(null)
   const [suggestions, setSuggestions] = useState<{
     origins: string[]
     roasters: string[]
@@ -108,6 +109,14 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
   const handleChange = (field: keyof CoffeeBeanFormData, value: string | number | Date) => {
     setDirty(true)
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const showValue = (field: string, value: number) =>
+    focusedField === field && value === 0 ? '' : value
+
+  const handleNumberChange = (field: keyof CoffeeBeanFormData, rawValue: string) => {
+    setDirty(true)
+    setFormData((prev) => ({ ...prev, [field]: rawValue === '' ? 0 : Number(rawValue) }))
   }
 
   return (
@@ -234,26 +243,28 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           <Input
             label="当前库存 (g)"
             type="number"
-            value={formData.quantity}
-            onChange={(e) => handleChange('quantity', Number(e.target.value))}
-            onFocus={(e) => e.target.select()}
+            value={showValue('quantity', formData.quantity)}
+            onChange={(e) => handleNumberChange('quantity', e.target.value)}
+            onFocus={() => setFocusedField('quantity')}
+            onBlur={() => setFocusedField(null)}
             min={0}
             error={formData.quantity > formData.totalQuantity ? '当前库存不能大于总购入量' : undefined}
           />
           <Input
             label="总购入量 (g)"
             type="number"
-            value={formData.totalQuantity}
+            value={showValue('totalQuantity', formData.totalQuantity)}
             onChange={(e) => {
               setDirty(true)
-              const v = Number(e.target.value)
+              const v = e.target.value === '' ? 0 : Number(e.target.value)
               setFormData((prev) => ({
                 ...prev,
                 totalQuantity: v,
                 ...(!isEdit ? { quantity: v } : {}),
               }))
             }}
-            onFocus={(e) => e.target.select()}
+            onFocus={() => setFocusedField('totalQuantity')}
+            onBlur={() => setFocusedField(null)}
             min={0}
           />
         </div>
@@ -261,9 +272,10 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
         <Input
           label="价格 (元)"
           type="number"
-          value={formData.price}
-          onChange={(e) => handleChange('price', Number(e.target.value))}
-          onFocus={(e) => e.target.select()}
+          value={showValue('price', formData.price)}
+          onChange={(e) => handleNumberChange('price', e.target.value)}
+          onFocus={() => setFocusedField('price')}
+          onBlur={() => setFocusedField(null)}
           min={0}
           step={0.01}
         />
@@ -272,16 +284,20 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           <Input
             label="养豆期 (天)"
             type="number"
-            value={formData.restDays}
-            onChange={(e) => handleChange('restDays', Number(e.target.value))}
+            value={showValue('restDays', formData.restDays)}
+            onChange={(e) => handleNumberChange('restDays', e.target.value)}
+            onFocus={() => setFocusedField('restDays')}
+            onBlur={() => setFocusedField(null)}
             min={0}
             max={90}
           />
           <Input
             label="最佳饮用期截止 (天)"
             type="number"
-            value={formData.bestDays}
-            onChange={(e) => handleChange('bestDays', Number(e.target.value))}
+            value={showValue('bestDays', formData.bestDays)}
+            onChange={(e) => handleNumberChange('bestDays', e.target.value)}
+            onFocus={() => setFocusedField('bestDays')}
+            onBlur={() => setFocusedField(null)}
             min={(formData.restDays || 7) + 1}
             max={365}
           />

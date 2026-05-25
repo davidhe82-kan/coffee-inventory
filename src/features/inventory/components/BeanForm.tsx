@@ -224,6 +224,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
             onChange={(e) => handleChange('quantity', Number(e.target.value))}
             onFocus={(e) => e.target.select()}
             min={0}
+            error={formData.quantity > formData.totalQuantity ? '当前库存不能大于总购入量' : undefined}
           />
           <Input
             label="总购入量 (g)"
@@ -288,7 +289,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
         <Button variant="ghost" onClick={() => navigate(isEdit ? `/bean/${beanId}` : '/')} className="flex-1 border border-coffee-300">
           取消
         </Button>
-        <Button onClick={handleSubmit} disabled={loading || !formData.name.trim() || (formData.bestDays || 90) <= (formData.restDays || 7)} className="flex-1">
+        <Button onClick={handleSubmit} disabled={loading || !formData.name.trim() || (formData.bestDays || 90) <= (formData.restDays || 7) || formData.quantity > formData.totalQuantity} className="flex-1">
           <Save className="w-4 h-4 mr-2" />
           {loading ? '保存中...' : '保存'}
         </Button>

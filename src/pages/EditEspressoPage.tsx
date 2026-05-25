@@ -128,7 +128,6 @@ export function EditEspressoPage() {
 
     await brewService.update(id, record)
 
-    const sameBean = selectedBean.id === originalBeanId
     if (sameBean) {
       const delta = originalBeanWeight - form.beanWeight
       if (delta !== 0) {

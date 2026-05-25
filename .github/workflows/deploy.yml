@@ -21,4 +21,5 @@ jobs:
       - name: Deploy to CloudBase static hosting
         run: |
           npm install -g @cloudbase/cli
+          tcb login --apiKeyId ${{ secrets.TCB_SECRET_ID }} --apiKey ${{ secrets.TCB_SECRET_KEY }}
           tcb hosting deploy dist -e ${{ secrets.TCB_ENV_ID }}

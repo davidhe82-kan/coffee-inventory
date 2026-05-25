@@ -89,6 +89,20 @@ export function EditBrewPage() {
 
   const handleSubmit = async () => {
     if (!id || !selectedBean) return
+
+    const sameBean = selectedBean.id === originalBeanId
+    if (sameBean) {
+      if (form.beanWeight > selectedBean.quantity + originalBeanWeight) {
+        alert(`库存不足！当前库存 ${selectedBean.quantity}g，调整后需要 ${form.beanWeight - originalBeanWeight}g（增加）`)
+        return
+      }
+    } else {
+      if (form.beanWeight > selectedBean.quantity) {
+        alert(`库存不足！当前库存 ${selectedBean.quantity}g，需要 ${form.beanWeight}g`)
+        return
+      }
+    }
+
     setSubmitting(true)
 
     const record: Partial<NewBrewRecord> = {

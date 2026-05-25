@@ -72,6 +72,10 @@ export function BeanDetailPage() {
 
   const handleTransaction = async () => {
     if (txAmount <= 0) return
+    if (txType === 'consume' && txAmount > bean.quantity) {
+      alert(`库存不足！当前库存 ${bean.quantity}g，输入 ${txAmount}g`)
+      return
+    }
     try {
       setLoading(true)
       await addTransaction({

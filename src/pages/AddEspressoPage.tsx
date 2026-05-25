@@ -66,6 +66,10 @@ export function AddEspressoPage() {
 
   const handleSubmit = async () => {
     if (!selectedBean) return
+    if (form.beanWeight > selectedBean.quantity) {
+      alert(`库存不足！当前库存 ${selectedBean.quantity}g，需要 ${form.beanWeight}g`)
+      return
+    }
 
     setSubmitting(true)
 

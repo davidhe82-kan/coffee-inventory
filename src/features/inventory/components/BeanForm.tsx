@@ -8,6 +8,7 @@ import { coffeeBeanService } from '../services/coffeeBeanService'
 import type { CoffeeBeanFormData, RoastLevel } from '../types'
 import { parseBestPeriod, formatBestPeriod } from '@/lib/utils'
 import { ArrowLeft, Save } from 'lucide-react'
+import { Modal } from '@/components/ui/Modal'
 
 interface BeanFormProps {
   initialData?: Partial<CoffeeBeanFormData>
@@ -25,6 +26,8 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
   const navigate = useNavigate()
   const { addBean, updateBean } = useCoffeeBeans()
   const [loading, setLoading] = useState(false)
+  const [dirty, setDirty] = useState(false)
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false)
   const [suggestions, setSuggestions] = useState<{
     origins: string[]
     roasters: string[]
@@ -67,6 +70,16 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
     loadSuggestions()
   }, [])
 
+  const goBack = () => navigate(isEdit ? `/bean/${beanId}` : '/')
+
+  const handleBack = () => {
+    if (dirty) {
+      setShowUnsavedModal(true)
+    } else {
+      goBack()
+    }
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     if (!formData.name.trim()) return
@@ -93,6 +106,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
   }
 
   const handleChange = (field: keyof CoffeeBeanFormData, value: string | number | Date) => {
+    setDirty(true)
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
@@ -103,7 +117,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => navigate(isEdit ? `/bean/${beanId}` : '/')}
+          onClick={handleBack}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           返回
@@ -231,6 +245,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
             type="number"
             value={formData.totalQuantity}
             onChange={(e) => {
+              setDirty(true)
               const v = Number(e.target.value)
               setFormData((prev) => ({
                 ...prev,
@@ -248,6 +263,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           type="number"
           value={formData.price}
           onChange={(e) => handleChange('price', Number(e.target.value))}
+          onFocus={(e) => e.target.select()}
           min={0}
           step={0.01}
         />
@@ -286,7 +302,7 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
       </div>
 
       <div className="flex gap-3 pt-4">
-        <Button variant="ghost" onClick={() => navigate(isEdit ? `/bean/${beanId}` : '/')} className="flex-1 border border-coffee-300">
+        <Button variant="ghost" onClick={handleBack} className="flex-1 border border-coffee-300">
           取消
         </Button>
         <Button onClick={handleSubmit} disabled={loading || !formData.name.trim() || (formData.bestDays || 90) <= (formData.restDays || 7) || formData.quantity > formData.totalQuantity} className="flex-1">
@@ -294,6 +310,24 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
           {loading ? '保存中...' : '保存'}
         </Button>
       </div>
+      <Modal
+        isOpen={showUnsavedModal}
+        onClose={() => setShowUnsavedModal(false)}
+        title="未保存的更改"
+        maxWidth="sm"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowUnsavedModal(false)} className="flex-1 border border-coffee-300">
+              继续编辑
+            </Button>
+            <Button onClick={goBack} className="flex-1 bg-red-500 hover:bg-red-600 text-white">
+              确定离开
+            </Button>
+          </>
+        }
+      >
+        <p className="text-coffee-700">有未保存的内容，确定离开吗？</p>
+      </Modal>
     </form>
   )
 }

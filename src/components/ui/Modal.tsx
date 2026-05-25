@@ -22,40 +22,41 @@ const maxWidthClasses = {
 const FOCUSABLE_SELECTOR =
   'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
+const INPUT_SELECTOR = 'input:not([type="hidden"]), textarea, select'
+
 export function Modal({ isOpen, onClose, title, children, footer, className, maxWidth = 'md' }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const titleId = useId()
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-        return
-      }
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onCloseRef.current()
+      return
+    }
 
-      if (e.key === 'Tab' && panelRef.current) {
-        const focusable = panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
-        if (focusable.length === 0) return
+    if (e.key === 'Tab' && panelRef.current) {
+      const focusable = panelRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
+      if (focusable.length === 0) return
 
-        const first = focusable[0]
-        const last = focusable[focusable.length - 1]
+      const first = focusable[0]
+      const last = focusable[focusable.length - 1]
 
-        if (e.shiftKey) {
-          if (document.activeElement === first) {
-            e.preventDefault()
-            last.focus()
-          }
-        } else {
-          if (document.activeElement === last) {
-            e.preventDefault()
-            first.focus()
-          }
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
         }
       }
-    },
-    [onClose]
-  )
+    }
+  }, [])
 
   useEffect(() => {
     if (!isOpen) return
@@ -65,9 +66,9 @@ export function Modal({ isOpen, onClose, title, children, footer, className, max
     document.addEventListener('keydown', handleKeyDown)
 
     requestAnimationFrame(() => {
-      const focusable = panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)
-      if (focusable && focusable.length > 0) {
-        focusable[0].focus()
+      const firstInput = panelRef.current?.querySelector<HTMLElement>(INPUT_SELECTOR)
+      if (firstInput) {
+        firstInput.focus()
       }
     })
 

@@ -111,8 +111,8 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  const showValue = (field: string, value: number) =>
-    focusedField === field && value === 0 ? '' : value
+  const showValue = (field: string, value: number | undefined) =>
+    focusedField === field && !value ? '' : (value ?? '')
 
   const handleNumberChange = (field: keyof CoffeeBeanFormData, rawValue: string) => {
     setDirty(true)

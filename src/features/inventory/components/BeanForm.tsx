@@ -228,7 +228,14 @@ export function BeanForm({ initialData, beanId, isEdit = false }: BeanFormProps)
             label="总购入量 (g)"
             type="number"
             value={formData.totalQuantity}
-            onChange={(e) => handleChange('totalQuantity', Number(e.target.value))}
+            onChange={(e) => {
+              const v = Number(e.target.value)
+              setFormData((prev) => ({
+                ...prev,
+                totalQuantity: v,
+                ...(!isEdit ? { quantity: v } : {}),
+              }))
+            }}
             min={0}
           />
         </div>

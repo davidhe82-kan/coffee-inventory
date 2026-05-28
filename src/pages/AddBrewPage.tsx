@@ -3,15 +3,23 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Coffee, Scale, ThermometerSun, Filter, Star, Save, ChevronRight } from 'lucide-react'
 import { brewService } from '@/features/brew/services/brewService'
 import { coffeeBeanService } from '@/features/inventory/services/coffeeBeanService'
-import type { NewBrewRecord } from '@/features/brew/types'
 import type { CoffeeBean } from '@/features/inventory/types'
 import { Button } from '@/components/ui/Button'
 import { BeanPickerSheet } from '@/components/ui/BeanPickerSheet'
-import { parseBestPeriod, getFreshnessStatus, getFreshnessLabel } from '@/lib/utils'
+import { parseBestPeriod, getFreshnessStatus, getFreshnessLabel, cn } from '@/lib/utils'
 
 const DEFAULT_GRINDERS = ['迈赫迪 E65S', '迈赫迪 EK43', 'Fellow Ode', 'Baratza Sette', 'Comandante']
 const DEFAULT_DRIPPERS = ['V60', 'Kalita Wave', 'Chemex', 'Melitta', 'Hario Switch']
 const METHODS = ['手冲', '浸泡', '点滴', '冷萃', '冰滴', '其他']
+const METHOD_TO_BREW_TYPE: Record<string, 'pour-over' | 'espresso'> = {
+  '手冲': 'pour-over',
+  '浸泡': 'pour-over',
+  '点滴': 'pour-over',
+  '冷萃': 'pour-over',
+  '冰滴': 'pour-over',
+  '其他': 'pour-over',
+}
+const MAX_STARS = 5
 
 export function AddBrewPage() {
   const navigate = useNavigate()
@@ -64,34 +72,42 @@ export function AddBrewPage() {
 
   const handleSubmit = async () => {
     if (!selectedBean) return
-    if (form.beanWeight > selectedBean.quantity) {
-      alert(`库存不足！当前库存 ${selectedBean.quantity}g，需要 ${form.beanWeight}g`)
+
+    const beanWeight = Math.max(1, Math.round(Number(form.beanWeight) || 0))
+    const waterTemp = Math.max(70, Math.min(100, Number(form.waterTemp) || 92))
+    const quantity = selectedBean.quantity ?? 0
+
+    if (beanWeight > quantity) {
+      alert(`库存不足！当前库存 ${quantity}g，需要 ${beanWeight}g`)
       return
     }
 
     setSubmitting(true)
 
-    const record: NewBrewRecord = {
-      beanId: selectedBean.id,
-      beanName: selectedBean.name,
-      beanWeight: form.beanWeight,
-      brewType: 'pour-over',
-      waterTemp: form.waterTemp,
-      grinder: form.grinder,
-      grindSetting: form.grindSetting,
-      method: form.method,
-      technique: form.technique,
-      dripper: form.dripper,
-      rating: form.rating,
-      notes: form.notes,
+    try {
+      await brewService.create({
+        beanId: selectedBean.id,
+        beanName: selectedBean.name,
+        beanWeight,
+        brewType: METHOD_TO_BREW_TYPE[form.method] ?? 'pour-over',
+        waterTemp,
+        grinder: form.grinder,
+        grindSetting: form.grindSetting,
+        method: form.method,
+        technique: form.technique,
+        dripper: form.dripper,
+        rating: form.rating,
+        notes: form.notes,
+      })
+
+      await coffeeBeanService.updateQuantity(selectedBean.id, Math.max(0, quantity - beanWeight))
+
+      navigate('/brew')
+    } catch (err) {
+      console.error('保存失败:', err)
+      alert('保存失败，请重试')
+      setSubmitting(false)
     }
-
-    await brewService.create(record)
-
-    const newQuantity = Math.max(0, selectedBean.quantity - form.beanWeight)
-    await coffeeBeanService.updateQuantity(selectedBean.id, newQuantity)
-
-    navigate('/brew')
   }
 
   const renderSelectedBean = () => {
@@ -125,15 +141,13 @@ export function AddBrewPage() {
           </div>
           <div className="flex items-center gap-2">
             <span
-              className={`text-xs font-medium px-2 py-1 rounded-full ${
-                freshness === 'good'
-                  ? 'bg-green-100 text-green-700'
-                  : freshness === 'resting'
-                  ? 'bg-teal-100 text-teal-700'
-                  : freshness === 'aging'
-                  ? 'bg-amber-100 text-amber-700'
-                  : 'bg-red-100 text-red-600'
-              }`}
+              className={cn(
+                'text-xs font-medium px-2 py-1 rounded-full',
+                freshness === 'good' && 'bg-green-100 text-green-700',
+                freshness === 'resting' && 'bg-teal-100 text-teal-700',
+                freshness === 'aging' && 'bg-amber-100 text-amber-700',
+                freshness === 'expired' && 'bg-red-100 text-red-600',
+              )}
             >
               {freshnessLabel}
             </span>
@@ -296,7 +310,7 @@ export function AddBrewPage() {
           </h3>
 
           <div className="flex items-center gap-2 mb-4">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: MAX_STARS }).map((_, i) => (
               <button
                 key={i}
                 onClick={() => setForm({ ...form, rating: i + 1 })}
